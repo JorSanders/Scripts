@@ -1,0 +1,3 @@
+#!/bin/bash
+
+alias conn='ping 8.8.8.8|grep -ivE "time=[0-9][0-9]\."'

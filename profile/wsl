@@ -1,0 +1,7 @@
+#!/bin/bash
+
+export LS_COLORS="ow=01;36;40"
+export WINHOME="/mnt/c/Users/jorsa"
+
+keychain --agents ssh &> /dev/null
+source ~/.keychain/jor-win10-dsktp-sh
