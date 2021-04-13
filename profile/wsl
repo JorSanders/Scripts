@@ -6,7 +6,7 @@ export LS_COLORS="ow=01;36;40"
 export WINHOME="/mnt/c/Users/Jor"
 
 # WSL doesn't start an ssh/key agent
-keychain --agents ssh &> /dev/null 
+keychain --agents ssh
 # shellcheck source=/dev/null
 source ~/.keychain/*-sh
- 
+ssh-add $HOME/.ssh/*.key
