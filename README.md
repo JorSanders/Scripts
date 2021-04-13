@@ -13,12 +13,12 @@ Add the following to your .bashrc
 export PATH="$HOME/Projects/Scripts/bin:$PATH"
 
 # Jor .profile
-for f in  "$HOME/Projects/profile/*"; do
+for f in  $HOME/Projects/Scripts/profile/*; do
   . "$f" 
 done
 
 # Jor aliasses
-for f in  "$HOME/Scripts/aliasses/*"; do
+for f in  $HOME/Projects/Scripts/aliasses/*; do
   . "$f" 
 done
 ```
