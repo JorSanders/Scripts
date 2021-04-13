@@ -1,0 +1,4 @@
+#!/bin/bash
+
+# Clean branches
+git branch | grep -iEv "master|development|\\*" | xargs git branch -D

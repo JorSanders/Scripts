@@ -1,0 +1,26 @@
+#!/bin/bash
+
+# Clean remote branches
+
+WHITELIST="origin/master$|origin/development$|origin/HEAD"
+if [ "$1" != "" ]; then
+    WHITELIST="$WHITELIST|$1"
+fi
+
+echo "Removing branches:"
+DYINGBRANCHES=$(git branch -r | grep -iEv "$WHITELIST")
+for DYINGBRANCH in $DYINGBRANCHES
+do
+    BRANCHNAME=${DYINGBRANCH#"origin/"}
+    if [ "$2" == "NODRYRUN" ]; then
+        echo "No dry run, removing $BRANCHNAME now!!!!!!!!!!"
+        git push origin --delete $BRANCHNAME
+    else
+        echo "Dry run, pretend removing $BRANCHNAME"
+    fi
+done
+
+echo "Branches kept:"
+git branch -r | grep -iE "$WHITELIST"
+
+echo $WHITELIST

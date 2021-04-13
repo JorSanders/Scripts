@@ -1,0 +1,13 @@
+#!/bin/bash
+
+# Find the root of a project if it is located on Source. Also check for some common prefixes
+
+DIR=$(find -L ~/Projects -name "$1" -maxdepth 2 -type d)
+
+if [ "$DIR" != "" ]; then
+    echo $DIR
+    exit 0
+fi
+
+echo "$1 Doesn't exist"
+exit 1

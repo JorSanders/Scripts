@@ -1,0 +1,4 @@
+#!/bin/bash
+
+# quickly save current changes under a WIP commit.
+git add . && git commit -m 'WIP'

@@ -1,0 +1,4 @@
+#!/bin/bash
+
+# Git Reset Hard (I'm lazy)
+git reset --hard

@@ -1,0 +1,5 @@
+#!/bin/bash
+
+mkdir -p .globalignored/
+touch .globalignored/$1.checksum
+echo $(cof $1) > .globalignored/$1.checksum

@@ -1,0 +1,12 @@
+#!/bin/bash
+
+FILE_SHASUM=$(cof $1)
+
+mkdir -p .globalignored/
+touch .globalignored/$1.checksum
+
+if [[ $FILE_SHASUM = "$(cat .globalignored/$1.checksum)" ]] ; then
+    exit 1
+fi
+
+exit 0

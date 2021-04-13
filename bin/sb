@@ -1,0 +1,27 @@
+#!/bin/bash
+
+# Start Spring boot server
+
+# Read arguments
+for arg in "$@"
+do
+    case $arg in
+        --pull)
+        SHOULD_PULL=1
+        shift
+        ;;
+    esac
+done
+
+if [[ $SHOULD_PULL = "1" ]] ; then
+    echo 'Pulling'
+    git pull
+fi
+
+if checksum_changed pom.xml; then
+    echo 'pom.xml changed; Running "mvn install -Dmaven.test.skip=true"'
+    mvn clean install -Dmaven.test.skip=true
+    save_checksum pom.xml
+fi
+
+mvn spring-boot:run -Dmaven.test.skip=true
