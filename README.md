@@ -17,7 +17,7 @@ done
 ### Bin
 Add the following to your .bashrc
 ```shell
-export PATH="/home/$WINHOME/Projects/Scripts/bin:$PATH"
+export PATH="$WINHOME/Projects/Scripts/bin:$PATH"
 ```
 
 ### Aliasses
