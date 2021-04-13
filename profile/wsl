@@ -7,5 +7,6 @@ export WINHOME="/mnt/c/Users/Jor"
 
 # WSL doesn't start an ssh/key agent
 keychain --agents ssh &> /dev/null 
+# shellcheck source=/dev/null
 source ~/.keychain/*-sh
  
