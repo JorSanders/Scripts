@@ -1,8 +1,7 @@
 #!/bin/bash
 
 # Sha 256 checksum of file
-SHASUM_OUTPUT=$(shasum -a 256 $1)
+SHASUM_OUTPUT=$(shasum -a 256 "$1")
+read -ra SHASUM_OUTPUT_ARRAY <<< "$SHASUM_OUTPUT"
 
-# Print the first element of the shasum output
-set -- $SHASUM_OUTPUT
-echo $1
+echo "${SHASUM_OUTPUT_ARRAY[0]}"

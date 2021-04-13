@@ -5,4 +5,4 @@ set -e
 # Start Work (on project in vscode)
 PROJECT_ROOT=$(project_root "$1")
 
-(code $PROJECT_ROOT)
+(code "$PROJECT_ROOT")

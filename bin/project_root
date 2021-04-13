@@ -5,7 +5,7 @@
 DIR=$(find -L ~/Projects -maxdepth 2 -type d -iname "$1")
 
 if [ "$DIR" != "" ]; then
-    echo $DIR
+    echo "$DIR"
     exit 0
 fi
 

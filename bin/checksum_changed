@@ -1,11 +1,12 @@
 #!/bin/bash
 
-FILE_SHASUM=$(cof $1)
+FILE_SHASUM=$(cof "$1")
+SAVED_SHASUM=$(cat ".globalignored/$1.checksum")
 
 mkdir -p .globalignored/
-touch .globalignored/$1.checksum
+touch ".globalignored/$1.checksum"
 
-if [[ $FILE_SHASUM = "$(cat .globalignored/$1.checksum)" ]] ; then
+if [[ "$FILE_SHASUM" = "$SAVED_SHASUM" ]]; then
     exit 1
 fi
 
