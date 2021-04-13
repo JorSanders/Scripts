@@ -1,4 +1,8 @@
 #!/bin/bash
 
+set -e
+
 # Start Work (on project in vscode)
-(cd "$(project_root $1)" && code .)
+PROJECT_ROOT=$(project_root "$1")
+
+(code $PROJECT_ROOT)
