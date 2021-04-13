@@ -6,24 +6,19 @@ I highly recommend not running other people commandos blindly on your machine. S
 
 ## Setup
 
-### profile
+### .bashrc
 Add the following to your .bashrc
 ```shell
-for f in  /mnt/c/Users/Jor/Projects/Scripts/profile/*; do
+# Jor bin in PATH
+export PATH="$HOME/Projects/Scripts/bin:$PATH"
+
+# Jor .profile
+for f in  "$HOME/Projects/profile/*"; do
   . "$f" 
 done
-```
 
-### Bin
-Add the following to your .bashrc
-```shell
-export PATH="$WINHOME/Projects/Scripts/bin:$PATH"
-```
-
-### Aliasses
-Add the following to your .bashrc
-```shell
-for f in  /mnt/c/Users/Jor/Projects/Scripts/aliasses/*; do
+# Jor aliasses
+for f in  "$HOME/Scripts/aliasses/*"; do
   . "$f" 
 done
 ```
