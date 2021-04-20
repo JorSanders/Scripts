@@ -1,4 +1,13 @@
 #!/bin/bash
 
-# quickly save current changes under a WIP commit.
-git add . && git commit -m 'WIP'
+# https://dev.to/bowmanjd/install-docker-on-windows-wsl-without-docker-desktop-34m9
+
+DOCKER_DISTRO="Debian"
+DOCKER_DIR=/mnt/wsl/shared-docker
+DOCKER_SOCK="$DOCKER_DIR/docker.sock"
+export DOCKER_HOST="unix://$DOCKER_SOCK"
+if [ ! -S "$DOCKER_SOCK" ]; then
+    mkdir -pm o=,ug=rwx "$DOCKER_DIR"
+    chgrp docker "$DOCKER_DIR"
+    /mnt/c/Windows/System32/wsl.exe -d $DOCKER_DISTRO sh -c "nohup sudo -b dockerd < /dev/null > $DOCKER_DIR/dockerd.log 2>&1"
+fi
