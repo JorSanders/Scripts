@@ -6,6 +6,8 @@
 export WINHOME="/mnt/c/Users/Jor"
 
 # WSL doesn't start an ssh/key agent
+# Make sure it's installed with
+# sudo apt install keychain
 keychain --agents ssh &> /dev/null
 # shellcheck source=/dev/null
 source ~/.keychain/*-sh 
