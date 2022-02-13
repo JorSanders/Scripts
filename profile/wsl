@@ -1,15 +1,8 @@
 #!/bin/bash
 
+# TODO: check if we are in WSL
+
 # Only needed in powershell. not needed in "Windows-terminal"
 # export LS_COLORS="ow=01;36;40"
 
 export WINHOME="/mnt/c/Users/Jor"
-
-# WSL doesn't start an ssh/key agent
-# Make sure it's installed with
-# sudo apt install keychain
-keychain --agents ssh &> /dev/null
-# shellcheck source=/dev/null
-source ~/.keychain/*-sh 
-
-ssh-add -l &> /dev/null || ssh-add "$HOME"/.ssh/*.key

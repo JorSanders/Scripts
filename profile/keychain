@@ -1,0 +1,10 @@
+#!/bin/bash
+
+# sudo apt install keychain
+
+keychain --agents ssh &> /dev/null
+
+# shellcheck source=/dev/null
+source ~/.keychain/*-sh
+
+ssh-add -l &> /dev/null || ssh-add "$HOME"/.ssh/*.key
