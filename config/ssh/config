@@ -1,6 +1,9 @@
 Host github.com
-    IdentityFile ~/.ssh/jor_github
+    IdentityFile ~/.ssh/jor_github.key
     User git
 Host *amazonaws.com
     User ec2-user
     IdentityFile ~/.ssh/jor_aws.pem
+Host rpi.jor.dev
+    User pi
+    IdentiryFile ~/.ssh/jor_rpi.key
