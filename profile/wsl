@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Only needed in powershell not needed in "Windows-terminal"
+# Only needed in powershell. not needed in "Windows-terminal"
 # export LS_COLORS="ow=01;36;40"
 
 export WINHOME="/mnt/c/Users/Jor"
