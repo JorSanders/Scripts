@@ -6,4 +6,4 @@ Host *amazonaws.com
     IdentityFile ~/.ssh/jor_aws.pem
 Host rpi.jor.dev
     User pi
-    IdentiryFile ~/.ssh/jor_rpi.key
+    IdentityFile ~/.ssh/jor_rpi.key
