@@ -7,4 +7,6 @@ keychain --agents ssh &> /dev/null
 # shellcheck source=/dev/null
 source ~/.keychain/*-sh
 
+export GPG_TTY=$(tty)
+
 ssh-add -l &> /dev/null || ssh-add "$HOME"/.ssh/*.key
