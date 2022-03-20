@@ -1,4 +1,8 @@
 #!/bin/bash
 
-# Clean branches
+if [ "$1" == "--help" ]; then
+    echo "Clean all local git branches except master/development"
+    exit 0
+fi
+
 git branch | grep -iEv "master|development|\\*" | xargs git branch -D

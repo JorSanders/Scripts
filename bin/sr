@@ -1,0 +1,104 @@
+#!/bin/bash
+
+if [ "$1" == "--help" ]; then
+    echo "Start a rails server"
+    echo " -m|--migrate to run rails migrations on startup"
+    echo " --pull to git pull before starting"
+    exit 0
+fi
+
+# Read arguments
+for arg in "$@"
+do
+    case $arg in
+        -m|--migrate)
+        SHOULD_MIGRATE=1
+        shift
+        ;;
+        --pull)
+        SHOULD_PULL=1
+        shift
+        ;;
+    esac
+done
+
+# Print port based on project name
+port_for_project() {
+    case $1 in
+        digid_x)
+            echo 8095
+            ;;
+
+        digid_admin)
+            echo 8094
+            ;;
+
+        digid_stubs)
+            echo 8093
+            ;;
+
+        digid_config)
+            echo 8073
+            ;;
+
+        digid_exa)
+            echo 8005
+            ;;
+
+        digid_balie)
+            echo 8003
+            ;;
+    esac
+}
+
+DIRNAME=$(basename $PWD)
+PORT=$(port_for_project $DIRNAME)
+
+# Make sure rbenv works and is initialized in ~/.zshenv
+RUBY_VERSION=$(cat $PWD/.ruby-version)
+
+if [[  -z $PORT ]] ; then
+    echo "No port found for $DIRNAME"
+    exit 1
+fi
+
+# Stop running server
+if ls tmp/pids/server.pid &> /dev/null; then
+    echo "Stoppping $DIRNAME"
+    kill -9 $(cat tmp/pids/server.pid) &> /dev/null
+    rm tmp/pids/server.pid
+fi
+
+if [[ $SHOULD_PULL = "1" ]] ; then
+    echo 'Pulling'
+    git pull
+fi
+
+# Backwards compitible with old releases
+if [ -f config/database.example.yml ] && [ ! -f config/database.yml ] ; then
+    echo "----> database.yml copied"
+    cp config/database.example.yml config/database.yml
+fi
+if [ -f config/secrets.example.yml ] && [ ! -f config/secrets.yml ]; then
+    echo "----> secrets.yml copied"
+    cp config/secrets.example.yml config/secrets.yml
+fi
+if [ -f config/redis.example.yml ] &&  [ ! -f config/redis.yml ]; then
+    echo "----> redis.yml copied"
+    cp config/redis.example.yml config/redis.yml
+fi
+
+
+if ! RBENV_VERSION=$RUBY_VERSION zsh -c "bundle check" ; then
+    RBENV_VERSION=$RUBY_VERSION zsh -c "bundle install"
+fi
+
+if [[ $SHOULD_MIGRATE = "1" ]] ; then
+    echo 'Migrating'
+    RBENV_VERSION=$(cat $PWD/.ruby-version) zsh -c "bundle exec rails db:migrate"
+    git checkout ERD*Diagram.pdf
+    git checkout db/*schema.rb
+fi
+
+echo "Starting $DIRNAME with version $RUBY_VERSION"
+RBENV_VERSION=$RUBY_VERSION zsh -c "bundle exec rails s -p $PORT -b 0.0.0.0"

@@ -1,0 +1,11 @@
+#!/bin/bash
+
+if [ "$1" == "--help" ]; then
+    echo "Create an validate a CSR en generate valid_cert.pem"
+    echo "\$1 .csr file"
+    echo "\$2 CA cert.pem"
+    echo "\$3 CA key.pem"
+    exit 0
+fi
+
+openssl x509 -req -in $1 -CA $2 -CAkey $3 -CAcreateserial -out valid_cert.pem -days 9000 -sha256

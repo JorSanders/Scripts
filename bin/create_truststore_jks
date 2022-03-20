@@ -1,0 +1,11 @@
+#!/bin/bash
+
+if [ "$1" == "--help" ]; then
+    echo "Create a .jks truststore of a .pem file. Or add a pem to a truststore"
+    echo "\$1 .pem cert"
+    echo "\$2 alias for the cert in the truststore"
+    echo "\$3 .jks file"
+    exit 0
+fi
+
+keytool -import -file $1  -alias $2 -keystore $3

@@ -1,8 +1,9 @@
 #!/bin/bash
 
-set -e
+if [ "$1" == "--help" ]; then
+    echo "Tries to find a project under ~/Source and opens it in VScode."
+    echo "TODO: allow for other IDEs to work as well"
+    exit 0
+fi
 
-# Start Work (on project in vscode)
-PROJECT_ROOT=$(project_root "$1")
-
-(code "$PROJECT_ROOT")
+(cd "$(project_root $1)" && code .)

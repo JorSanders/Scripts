@@ -1,15 +1,28 @@
 #!/bin/bash
 
-# Git checkout and update branch if exists or create one
+if [ "$1" == "--help" ]; then
+    echo "Does a git checkout on a branch. Searching in this order"
+    echo "  - Git tag"
+    echo "  - Local branch"
+    echo "  - Remote branch"
+    echo "  - Creates a new branch branch"
+    exit 0
+fi
+
 git fetch --prune
-if git rev-parse --verify "$1" > /dev/null 2>&1; then
+
+# Git checkout and update branch if exists or create one
+if git rev-parse --verify tags/$1 > /dev/null 2>&1; then
+    echo "Checking out local tags/$1"
+    git checkout tags/$1
+elif git rev-parse --verify $1 > /dev/null 2>&1; then
     echo "Checking out local branch $1"
-    git checkout "$1"
-elif git rev-parse --verify "origin/$1" > /dev/null 2>&1; then
+    git checkout $1
+    git pull
+elif git rev-parse --verify origin/$1 > /dev/null 2>&1; then
     echo "Checking out remote branch $1"
-    git checkout "origin/$1" -b "$1"
+    git checkout origin/$1 -b $1
 else
     echo "CHECKING OUT NEW BRANCH $1"
-    git checkout -b "$1"
+    git checkout -b $1
 fi
-git pull

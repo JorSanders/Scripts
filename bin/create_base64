@@ -1,0 +1,9 @@
+#!/bin/bash
+
+if [ "$1" == "--help" ]; then
+    echo "_base64.txt copy of file"
+    echo "\$1 original filename"
+    exit 0
+fi
+
+openssl base64 -in $1 -out $1.base64.txt
