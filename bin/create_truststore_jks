@@ -8,4 +8,4 @@ if [ "$1" == "--help" ]; then
     exit 0
 fi
 
-keytool -import -file $1  -alias $2 -keystore $3
+keytool -import -file "$1" -alias "$2" -keystore "$3"

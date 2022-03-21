@@ -7,4 +7,4 @@ if [ "$1" == "--help" ]; then
     exit 0
 fi
 
-openssl req -new -sha256 -key $1 -subj "/C=NL/ST=Zuid-Holland/L=Den Haag/O=Capgemini/OU=Doorontwikkeling/CN=$2" -out cert.csr
+openssl req -new -sha256 -key "$1" -subj "/C=NL/ST=Noord-Holland/L=Amsterdam/O=jor.dev/OU=jor.dev/CN=$2" -out cert.csr

@@ -1,9 +1,0 @@
-#!/bin/bash
-
-if [ "$1" == "--help" ]; then
-    echo "Does git reset --hard (this is just lazy)"
-    exit 0
-fi
-
-# Git Reset Hard (I'm lazy)
-git reset --hard

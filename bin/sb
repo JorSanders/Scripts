@@ -12,8 +12,8 @@ for arg in "$@"
 do
     case $arg in
         --pull)
-        SHOULD_PULL=1
-        shift
+            SHOULD_PULL=1
+            shift
         ;;
     esac
 done
@@ -28,8 +28,9 @@ if checksum_changed pom.xml; then
     mci
 fi
 
-JAVA_VERSION=$(cat pom.xml| grep java.version | sed 's/[^0-9]//g')
+JAVA_VERSION=$(grep java.version pom.xml | sed 's/[^0-9]//g')
 echo "Detected java version: " $JAVA_VERSION
 
 JAVA_HOME=$(/usr/libexec/java_home -v$JAVA_VERSION)
+export JAVA_HOME
 mvn clean spring-boot:run -Dmaven.test.skip=true

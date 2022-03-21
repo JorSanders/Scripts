@@ -6,4 +6,4 @@ if [ "$1" == "--help" ]; then
     exit 0
 fi
 
-openssl base64 -in $1 -out $1.base64.txt
+openssl base64 -in "$1" -out "$1".base64.txt

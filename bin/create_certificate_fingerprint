@@ -6,4 +6,4 @@ if [ "$1" == "--help" ]; then
     exit 0
 fi
 
-openssl x509 -noout -fingerprint -sha1 -inform pem -in $1
+openssl x509 -noout -fingerprint -sha1 -inform pem -in "$1"

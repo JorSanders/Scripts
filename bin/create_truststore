@@ -6,4 +6,4 @@ if [ "$1" == "--help" ]; then
     exit 0
 fi
 
-openssl pkcs12 -export -nokeys -in $1 -out truststore.pfx
+openssl pkcs12 -export -nokeys -in "$1" -out truststore.pfx
