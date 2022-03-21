@@ -1,5 +1,11 @@
 #!/bin/bash
 
+if [ "$1" == "--help" ]; then
+    echo "Save the checksum of a file under .globalignored."
+    echo "Useful for detecting gemfile.locks and pom.xml changes."
+    exit 0
+fi
+
 mkdir -p .globalignored/
-touch ".globalignored/$1.checksum"
-cof "$1" > ".globalignored/$1.checksum"
+touch .globalignored/"$1".checksum
+cof "$1" > .globalignored/"$1".checksum

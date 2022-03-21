@@ -1,14 +1,19 @@
 #!/bin/bash
 
-# Start Spring boot server
+if [ "$1" == "--help" ]; then
+    echo "Start a spring boot server"
+    echo "Does a maven clean install if the pom.xml changed"
+    echo " --pull to git pull before starting"
+    exit 0
+fi
 
 # Read arguments
 for arg in "$@"
 do
     case $arg in
         --pull)
-        SHOULD_PULL=1
-        shift
+            SHOULD_PULL=1
+            shift
         ;;
     esac
 done
@@ -20,8 +25,12 @@ fi
 
 if checksum_changed pom.xml; then
     echo 'pom.xml changed; Running "mvn install -Dmaven.test.skip=true"'
-    mvn clean install -Dmaven.test.skip=true
-    save_checksum pom.xml
+    mci
 fi
 
-mvn spring-boot:run -Dmaven.test.skip=true
+JAVA_VERSION=$(grep java.version pom.xml | sed 's/[^0-9]//g')
+echo "Detected java version: $JAVA_VERSION"
+
+JAVA_HOME=$(/usr/libexec/java_home -v "$JAVA_VERSION")
+export JAVA_HOME
+mvn clean spring-boot:run -Dmaven.test.skip=true

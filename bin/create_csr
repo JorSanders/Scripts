@@ -1,0 +1,10 @@
+#!/bin/bash
+
+if [ "$1" == "--help" ]; then
+    echo "Create a csr"
+    echo "\$1 key file .pem"
+    echo "\$2 CN for the csr"
+    exit 0
+fi
+
+openssl req -new -sha256 -key "$1" -subj "/C=NL/ST=Noord-Holland/L=Amsterdam/O=jor.dev/OU=jor.dev/CN=$2" -out cert.csr
