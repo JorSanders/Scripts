@@ -1,0 +1,12 @@
+#!/bin/bash
+
+if [ "$1" == "--help" ]; then
+    echo "git adds, commits and pushes"
+    echo "\$1 is the commit message"
+    exit 0
+fi
+
+# Git add commit push
+git add .
+git commit -m "$1"
+git push

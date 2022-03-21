@@ -1,4 +1,9 @@
 #!/bin/bash
 
-# quickly save current changes under a WIP commit.
+if [ "$1" == "--help" ]; then
+    echo "Quickly commits and current changes under a 'WIP' message."
+    echo "Useful for when you want to checkout a different commit/branch"
+    exit 0
+fi
+
 git add . && git commit -m 'WIP'
