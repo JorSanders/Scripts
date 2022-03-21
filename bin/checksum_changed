@@ -11,7 +11,7 @@ CACHED_SHASUM=$(cof "$1")
 mkdir -p .globalignored/
 touch .globalignored/$1.checksum
 
-if [[ $CACHED_SHASUM = .globalignored/$1.checksum ]] ; then
+if [[ $CACHED_SHASUM = .globalignored/"$1".checksum ]] ; then
     exit 1
 fi
 
