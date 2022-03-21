@@ -1,13 +1,13 @@
 #!/bin/bash
 
-# sudo apt install keychain
-
 keychain --agents ssh &> /dev/null
-
 # shellcheck source=/dev/null
 source ~/.keychain/*-sh
 
+ssh-add -l &> /dev/null || ssh-add "$HOME"/.ssh/*.key
+
 GPG_TTY=$(tty)
 export GPG_TTY
-
-ssh-add -l &> /dev/null || ssh-add "$HOME"/.ssh/*.key
+echo "Starting gpg-agent daemon"
+# shellcheck disable=SC2046
+eval $(gpg-agent --daemon)
