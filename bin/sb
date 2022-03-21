@@ -29,8 +29,8 @@ if checksum_changed pom.xml; then
 fi
 
 JAVA_VERSION=$(grep java.version pom.xml | sed 's/[^0-9]//g')
-echo "Detected java version: " $JAVA_VERSION
+echo "Detected java version: $JAVA_VERSION"
 
-JAVA_HOME=$(/usr/libexec/java_home -v$JAVA_VERSION)
+JAVA_HOME=$(/usr/libexec/java_home -v "$JAVA_VERSION")
 export JAVA_HOME
 mvn clean spring-boot:run -Dmaven.test.skip=true

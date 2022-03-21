@@ -5,10 +5,10 @@ if [ "$1" == "--help" ]; then
     exit 0
 fi
 
-JAVA_VERSION=$(cat pom.xml| grep java.version | sed 's/[^0-9]//g')
-echo "Detected java version: " $JAVA_VERSION
+JAVA_VERSION=$(grep java.version pom.xml | sed 's/[^0-9]//g')
+echo "Detected java version: $JAVA_VERSION"
 
-JAVA_HOME=$(/usr/libexec/java_home -v$JAVA_VERSION)
+JAVA_HOME=$(/usr/libexec/java_home -v "$JAVA_VERSION")
 export JAVA_HOME
 mvn clean install -Dmaven.test.skip=true -Ddependency-check.skip=true
 save_checksum pom.xml
