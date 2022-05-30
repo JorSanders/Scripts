@@ -1,13 +1,17 @@
 #!/bin/bash
 
-keychain --agents ssh &> /dev/null
-# shellcheck source=/dev/null
-source ~/.keychain/*-sh
+if ls ~/.keychain/*-sh &> /dev/null ; then
+    keychain --agents ssh &> /dev/null
+    # shellcheck source=/dev/null
+    source ~/.keychain/*-sh
+fi
 
 ssh-add -l &> /dev/null || ssh-add "$HOME"/.ssh/*.key
 
-GPG_TTY=$(tty)
-export GPG_TTY
-echo "Starting gpg-agent daemon"
-# shellcheck disable=SC2046
-eval $(gpg-agent --daemon)
+if pgrep gpg-agent &> /dev/null ; then
+    GPG_TTY=$(tty)
+    export GPG_TTY
+    echo "Starting gpg-agent daemon"
+    # shellcheck disable=SC2046
+    eval $(gpg-agent --daemon)
+fi
