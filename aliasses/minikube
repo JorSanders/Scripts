@@ -1,0 +1,4 @@
+#!/bin/bash
+
+alias podmani='podman machine init --cpus 4 --memory 4096 --disk-size 100'
+alias minikubed='minikube start --driver=podman --container-runtime containerd' #--alsologtostderr
