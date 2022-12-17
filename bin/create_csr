@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [ "$1" == "--help" ]; then
+if [ $# -lt 2 ] || [[ $* == *"--help"* ]]; then
     echo "Create a csr"
     echo "\$1 key file .pem"
     echo "\$2 CN for the csr"

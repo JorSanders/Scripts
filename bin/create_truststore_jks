@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [ "$1" == "--help" ]; then
+if [ $# -lt 3 ] || [[ $* == *"--help"* ]]; then
     echo "Create a .jks truststore of a .pem file. Or add a pem to a truststore"
     echo "\$1 .pem cert"
     echo "\$2 alias for the cert in the truststore"

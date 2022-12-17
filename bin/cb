@@ -1,8 +1,8 @@
 #!/bin/bash
 
-if [ "$1" == "--help" ]; then
-    echo "Clean all local git branches except master/development"
+if [[ $* == *"--help"* ]]; then
+    echo "Clean all local git branches except master|development|develop"
     exit 0
 fi
 
-git branch | grep -iEv "master|development|\\*" | xargs git branch -D
+git branch | grep -iEv "master|development|develop|\\*" | xargs git branch -D

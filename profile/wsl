@@ -1,7 +1,8 @@
 #!/bin/bash
 
-if [[ ! $(grep microsoft /proc/version) ]]; then
-    exit 0
+if ! grep -iq microsoft /proc/version ; then
+    echo 'ja'
+    return
 fi
 
 export WINHOME="/mnt/c/Users/Jor"

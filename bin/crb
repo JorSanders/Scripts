@@ -2,7 +2,14 @@
 
 # Clean remote branches
 
-WHITELIST="origin/master$|origin/development$|origin/HEAD"
+if [ $# -lt 1 ] || [[ $* == *"--help"* ]]; then
+    echo "Clean all remote git branches except master|development|develop"
+    echo "\$1 blacklist regex, matches won't be removed"
+    echo "\$2 NODRYRUN to actually run this"
+    exit 0
+fi
+
+WHITELIST="origin/master$|origin/development$|origin/develop$|origin/HEAD"
 if [ "$1" != "" ]; then
     WHITELIST="$WHITELIST|$1"
 fi

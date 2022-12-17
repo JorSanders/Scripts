@@ -1,7 +1,7 @@
 #!/bin/bash
 
-if [[ ! $(grep microsoft /proc/version) ]]; then
-    exit 0
+if ! grep -iq microsoft /proc/version ; then
+    return
 fi
 
 if ls ~/.keychain/*-sh &> /dev/null ; then
