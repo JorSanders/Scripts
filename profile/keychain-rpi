@@ -1,0 +1,8 @@
+#!/bin/bash
+
+
+if ! uname -r | grep -iqE '\-rpi\-' ; then
+    return
+fi
+
+export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR/ssh-agent.socket"
