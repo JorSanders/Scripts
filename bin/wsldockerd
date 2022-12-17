@@ -1,5 +1,10 @@
 #!/bin/bash
 
+if  [[ $* == *"--help"* ]]; then
+    echo "Starts Docker Daemon on WSL (because lack of systemd)"
+    exit 0
+fi
+
 DOCKER_DISTRO="Ubuntu"
 DOCKER_DIR=/mnt/wsl/shared-docker
 DOCKER_SOCK="$DOCKER_DIR/docker.sock"

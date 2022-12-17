@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [ "$1" == "--help" ]; then
+if [[ $* == *"--help"* ]]; then
     echo "Start a spring boot server"
     echo "Does a maven clean install if the pom.xml changed"
     echo " --pull to git pull before starting"
@@ -23,6 +23,8 @@ if [[ $SHOULD_PULL = "1" ]] ; then
     git pull
 fi
 
+# shellcheck source=/dev/null
+source "${BASH_SOURCE%/*}/lib/checksum_changed"
 if checksum_changed pom.xml; then
     echo 'pom.xml changed; Running "mvn install -Dmaven.test.skip=true"'
     mci

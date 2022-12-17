@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [ "$1" == "--help" ]; then
+if [[ $* == *"--help"* ]]; then
     echo "Performs a Maven clean install without tests and updates the pom.xml checksum"
     exit 0
 fi
@@ -11,4 +11,7 @@ echo "Detected java version: $JAVA_VERSION"
 JAVA_HOME=$(/usr/libexec/java_home -v "$JAVA_VERSION")
 export JAVA_HOME
 mvn clean install -Dmaven.test.skip=true -Ddependency-check.skip=true
+
+# shellcheck source=/dev/null
+source "${BASH_SOURCE%/*}/lib/save_checksum"
 save_checksum pom.xml

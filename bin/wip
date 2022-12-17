@@ -1,8 +1,7 @@
 #!/bin/bash
 
-if [ "$1" == "--help" ]; then
+if [[ $* == *"--help"* ]]; then
     echo "Quickly commits and current changes under a 'WIP' message."
-    echo "Useful for when you want to checkout a different commit/branch"
     exit 0
 fi
 

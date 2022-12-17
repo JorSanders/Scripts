@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if ! command -v pyenv &> /dev/null; then
+if ! grep -iq microsoft /proc/version ; then
     return
 fi
 

@@ -1,0 +1,16 @@
+#!/bin/bash
+
+if [[ $* == *"--help"* ]]; then
+    echo "Print the sha256 checksum of a file"
+    exit 0
+fi
+
+cof () {
+    # Sha 256 checksum of file
+    SHASUM_OUTPUT=$(shasum -a 256 "$1")
+
+    # Print the first element of the shasum output
+    # shellcheck disable=SC2086
+    set -- $SHASUM_OUTPUT
+    echo "$1"
+}

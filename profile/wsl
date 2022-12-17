@@ -1,3 +1,8 @@
 #!/bin/bash
 
+if ! grep -iq microsoft /proc/version ; then
+    echo 'ja'
+    return
+fi
+
 export WINHOME="/mnt/c/Users/Jor"

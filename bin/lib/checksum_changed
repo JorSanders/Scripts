@@ -1,0 +1,22 @@
+#!/bin/bash
+
+if [[ $* == *"--help"* ]]; then
+    echo "Check if the checksum of a file changed since last check"
+    echo "\$1 is the file name"
+    exit 0
+fi
+
+checksum_changed () {
+    # shellcheck source=/dev/null
+    source "${BASH_SOURCE%/*}/cof"
+    CACHED_SHASUM=$(cof "$1")
+
+    mkdir -p .globalignored/
+    touch .globalignored/"$1".checksum
+
+    if [[ $CACHED_SHASUM = .globalignored/"$1".checksum ]] ; then
+        exit 1
+    fi
+
+    exit 0
+}

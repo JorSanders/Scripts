@@ -1,0 +1,29 @@
+#!/bin/bash
+
+if [[ $* == *"--help"* ]]; then
+    echo "Finds the full path of a project onder ~/Projects"
+    exit 0
+fi
+
+project_root () {
+    # Find the root of a project if it is located on Source. Also check for some common prefixes
+    # TODO make DRY
+
+    DIR=$(find -L ~/Projects -maxdepth 2 -type d -iname "$1")
+
+    if [ "$DIR" != "" ]; then
+        echo "$DIR"
+        exit 0
+    fi
+
+
+    DIR=$(find -L ~/Projects -maxdepth 2 -type d -iname "nos-$1")
+
+    if [ "$DIR" != "" ]; then
+        echo "$DIR"
+        exit 0
+    fi
+
+    echo "'$1' not found"  1>&2
+    exit 1
+}

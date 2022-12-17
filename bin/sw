@@ -1,10 +1,15 @@
 #!/bin/bash
 
-if [ "$1" == "--help" ]; then
+if [[ $* == *"--help"* ]]; then
     echo "Tries to find a project under ~/Source and opens it in VScode."
     echo "TODO: allow for other IDEs to work as well"
     exit 0
 fi
+
+set -e
+
+# shellcheck source=/dev/null
+source "${BASH_SOURCE%/*}/lib/project_root"
 
 project_location=$(project_root "$1")
 

@@ -3,4 +3,4 @@ Host github.com
 Host *amazonaws.com
     User ec2-user
 Host rpi.jor.dev
-    User pi
+    User alarm

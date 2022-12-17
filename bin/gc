@@ -1,7 +1,7 @@
 #!/bin/bash
 
-if [ "$1" == "--help" ]; then
-    echo "Does a git checkout on a branch. Searching in this order"
+if [ $# -lt 1 ] || [[ $* == *"--help"* ]]; then
+    echo "Does a git checkout on a rev. Searching in this order"
     echo "  - Git tag"
     echo "  - Local branch"
     echo "  - Remote branch"
@@ -11,18 +11,44 @@ fi
 
 git fetch --prune
 
-# Git checkout and update branch if exists or create one
 if git rev-parse --verify tags/"$1" > /dev/null 2>&1; then
     echo "Checking out local tags/$1"
     git checkout tags/"$1"
-    elif git rev-parse --verify "$1" > /dev/null 2>&1; then
+    exit 0
+fi
+
+if git rev-parse --verify "$1" > /dev/null 2>&1; then
     echo "Checking out local branch $1"
     git checkout "$1"
     git pull
-    elif git rev-parse --verify origin/"$1" > /dev/null 2>&1; then
+    exit 0
+fi
+
+if git rev-parse --verify origin/"$1" > /dev/null 2>&1; then
     echo "Checking out remote branch $1"
     git checkout origin/"$1" -b "$1"
-else
-    echo "CHECKING OUT NEW BRANCH $1"
-    git checkout -b "$1"
+    exit 0
 fi
+
+if git rev-parse --verify origin/"$1" > /dev/null 2>&1; then
+    echo "Checking out remote branch $1"
+    git checkout origin/"$1" -b "$1"
+    exit 0
+fi
+
+LOCAL_BRANCH=$(git branch|grep -E "$1" -m 1 | xargs)
+if [ -n "$LOCAL_BRANCH" ]; then
+    echo "!!! REGEX MATCHED LOCAL BRANCH '$LOCAL_BRANCH'"
+    git checkout "$LOCAL_BRANCH"
+    exit 0
+fi
+
+REMOTE_BRANCH=$(git branch -r|grep -E "$1" -m 1 | xargs | sed -e "s/^origin\///")
+if [ -n "$REMOTE_BRANCH" ]; then
+    echo "!!! REGEX MATCHED REMOTE BRANCH '$REMOTE_BRANCH'"
+    git checkout origin/"$REMOTE_BRANCH" -b "$REMOTE_BRANCH"
+    exit 0
+fi
+
+echo "!!! CHECKING OUT NEW BRANCH $1"
+git checkout -b "$1"
