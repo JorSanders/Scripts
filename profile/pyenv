@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if ! test -f "$HOME/.pyenv"; then
+if test -f "$HOME/.pyenv"; then
     return
 fi
 
