@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if test -f "$HOME/.pyenv"; then
+if ! ls "$HOME/.pyenv" &> /dev/null ; then
     return
 fi
 
