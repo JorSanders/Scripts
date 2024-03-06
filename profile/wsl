@@ -1,12 +1,7 @@
 #!/bin/bash
 
-
-if ! test -f "/proc/version" ; then
+if ! which powershell.exe &> /dev/null ; then
     return
 fi
 
-if ! grep -iq microsoft /proc/version ; then
-    return
-fi
-
-export WINHOME="/mnt/c/Users/Jor"
+export WINHOME="/mnt/c/Users/jorde"
