@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if ! grep -iq microsoft /proc/version ; then
+if ! which powershell.exe &> /dev/null ; then
     return
 fi
 
