@@ -1,10 +1,20 @@
 #!/bin/bash
 
-
-if ! uname -r | grep -iqE 'rpi-' ; then
+if ! hostname | grep -iqE 'raspberry' &> /dev/null ; then
     return
 fi
 
-export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR/ssh-agent.socket"
+if ls ~/.keychain/*-sh &> /dev/null ; then
+    keychain --agents ssh &> /dev/null
+    # shellcheck source=/dev/null
+    source ~/.keychain/*-sh
+fi
 
-ssh-add -l &> /dev/null || ssh-add "$HOME"/.ssh/*.key
+#ssh-add -l &> /dev/null || ssh-add "$HOME"/.ssh/*.key
+
+if ! pgrep gpg-agent &> /dev/null ; then
+    GPG_TTY=$(tty)
+    export GPG_TTY
+    # shellcheck disable=SC2046
+    eval $(gpg-agent --daemon)
+fi
