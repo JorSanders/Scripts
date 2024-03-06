@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 if [ $# -lt 1 ] || [[ $* == *"--help"* ]]; then
     echo "git adds, commits and pushes"
     echo "\$1 is the commit message"

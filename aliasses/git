@@ -1,3 +1,4 @@
 #!/bin/bash
 
 alias grh="git reset --hard"
+# alias git-squash="git reset $(git merge-base master $(git "$1" --show-current))"

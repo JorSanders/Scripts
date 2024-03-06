@@ -1,5 +1,10 @@
 #!/bin/bash
 
+
+if ! test -f "/proc/version" ; then
+    return
+fi
+
 if ! grep -iq microsoft /proc/version ; then
     return
 fi
