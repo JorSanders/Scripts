@@ -10,7 +10,7 @@ if ls ~/.keychain/*-sh &> /dev/null ; then
     source ~/.keychain/*-sh
 fi
 
-#ssh-add -l &> /dev/null || ssh-add "$HOME"/.ssh/*.key
+ssh-add -l &> /dev/null || ssh-add "$HOME"/.ssh/*.key
 
 if ! pgrep gpg-agent &> /dev/null ; then
     GPG_TTY=$(tty)
