@@ -6,4 +6,4 @@ if [ $# -lt 1 ] || [[ $* == *"--help"* ]]; then
     exit 0
 fi
 
-openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -sha256 -days 9000 -subj "/C=NL/ST=Noord-Holland/L=Amsterdam/O=jor.dev/OU=IT/CN=$1"
+openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -sha256 -days 9000 -subj "/C=NL/ST=Noord-Holland/L=Amsterdam/O=jor.dev/OU=IT/CN=$1" -addext "subjectAltName = DNS:localhost"
