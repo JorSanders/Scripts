@@ -1,2 +1,3 @@
 ; Secret files are for tokens or other "Secret stuff"
 *.secret
+.DS_Store
