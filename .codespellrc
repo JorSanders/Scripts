@@ -1,0 +1,3 @@
+[codespell]
+; aliasses is the intentional (if creative) name of the aliasses/ folder
+ignore-words-list = aliasses

@@ -12,15 +12,15 @@ exist but its counterpart does: master <-> main, develop <-> development.
 So 'gc master' checks out 'main' in a repo that only has 'main'.
 
 Search order:
-  1. Exact tag
-  2. Exact local branch (followed by a git pull)
-  3. Remote-prefixed branch, e.g. 'origin/my-branch' checks out 'my-branch'
-  4. Exact branch on any remote (checked out as a tracking branch)
-  5. Any other rev, e.g. a commit hash (detached HEAD)
-  6. Partial match on local branch names
-  7. Partial match on remote branch names (matched against 'remote/branch')
-  8. Partial match on tag names
-  9. Nothing matched: a new branch named <rev> is created
+    1. Exact tag
+    2. Exact local branch (followed by a git pull)
+    3. Remote-prefixed branch, e.g. 'origin/my-branch' checks out 'my-branch'
+    4. Exact branch on any remote (checked out as a tracking branch)
+    5. Any other rev, e.g. a commit hash (detached HEAD)
+    6. Partial match on local branch names
+    7. Partial match on remote branch names (matched against 'remote/branch')
+    8. Partial match on tag names
+    9. Nothing matched: a new branch named <rev> is created
 
 A local branch that is checked out in another worktree (locked or not) has
 that worktree removed before being checked out here. A worktree holding
