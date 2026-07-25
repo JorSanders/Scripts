@@ -5,7 +5,7 @@ usage() {
 Usage: ./install [rc-file]
 
 Installs these scripts into your shell rc file: adds bin/ and bin/local/
-to PATH and sources every file under profile/ and aliasses/.
+to PATH and sources every file under profile/ and aliases/.
 
 [rc-file] defaults to ~/.zshrc when your shell is zsh, ~/.bashrc when it
 is bash, and ~/.profile otherwise. Running the script again is a no-op:
@@ -42,7 +42,7 @@ cat >>"$rc" <<EOF
 $marker
 export PATH="$scripts_dir/bin:$scripts_dir/bin/local:\$PATH"
 for f in "$scripts_dir"/profile/*; do . "\$f"; done
-for f in "$scripts_dir"/aliasses/*; do . "\$f"; done
+for f in "$scripts_dir"/aliases/*; do . "\$f"; done
 EOF
 
 echo "Installed in $rc, restart your shell or run: . $rc"

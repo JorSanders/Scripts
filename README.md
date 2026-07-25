@@ -10,7 +10,7 @@ I highly recommend not running other people commands blindly on your machine. So
 
 Run the install script. It adds bin/ and bin/local/ (gitignored,
 machine-local scripts) to PATH and sources every file under profile/ and
-aliasses/ from your shell rc file (~/.zshrc for Zsh, ~/.bashrc for Bash),
+aliases/ from your shell rc file (~/.zshrc for Zsh, ~/.bashrc for Bash),
 see `./install --help`:
 
 ```shell
