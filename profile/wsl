@@ -1,6 +1,6 @@
-#!/bin/bash
+#!/bin/sh
 
-if ! which powershell.exe &> /dev/null ; then
+if ! command -v powershell.exe >/dev/null 2>&1; then
     return
 fi
 

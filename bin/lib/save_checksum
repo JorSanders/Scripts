@@ -1,15 +1,11 @@
-#!/bin/bash
+#!/bin/sh
 
-if [[ $* == *"--help"* ]]; then
+if [ $# -lt 1 ] || [ "$1" = "--help" ]; then
     echo "Save the checksum of a file under .globalignored."
-    echo "Useful for detecting gemfile.locks and pom.xml changes."
+    echo "Useful for detecting Gemfile.lock and pom.xml changes."
+    echo "\$1 is the file name"
     exit 0
 fi
 
-save_checksum () {
-    mkdir -p .globalignored/
-    touch .globalignored/"$1".checksum
-    # shellcheck source=/dev/null
-    source "${BASH_SOURCE%/*}/save_checksum"
-    cof "$1" > .globalignored/"$1".checksum
-}
+mkdir -p .globalignored
+"$(dirname "$0")/cof" "$1" >".globalignored/$1.checksum"

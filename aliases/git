@@ -1,0 +1,3 @@
+#!/bin/sh
+
+alias grh="git reset --hard"

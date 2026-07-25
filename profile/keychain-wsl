@@ -1,18 +1,20 @@
-#!/bin/bash
+#!/bin/sh
 
-if ! which powershell.exe &> /dev/null ; then
+if ! command -v powershell.exe >/dev/null 2>&1; then
     return
 fi
 
-if ls ~/.keychain/*-sh &> /dev/null ; then
-    keychain --agents ssh &> /dev/null
+if ls ~/.keychain/*-sh >/dev/null 2>&1; then
+    keychain --agents ssh >/dev/null 2>&1
     # shellcheck source=/dev/null
-    source ~/.keychain/*-sh
+    . ~/.keychain/*-sh
 fi
 
-ssh-add -l &> /dev/null || ssh-add "$HOME"/.ssh/*.key
+if ! ssh-add -l >/dev/null 2>&1 && ls "$HOME"/.ssh/*.key >/dev/null 2>&1; then
+    ssh-add "$HOME"/.ssh/*.key
+fi
 
-if ! pgrep gpg-agent &> /dev/null ; then
+if ! pgrep gpg-agent >/dev/null 2>&1; then
     GPG_TTY=$(tty)
     export GPG_TTY
     # shellcheck disable=SC2046

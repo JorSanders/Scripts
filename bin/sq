@@ -1,0 +1,108 @@
+#!/bin/sh
+
+usage() {
+    cat <<'EOF'
+Usage: sq <message>
+
+Squashes all commits on the current branch into a single commit with
+<message> as its commit message. The squashed commits are those not on
+the base branch: the remote default branch when known, otherwise the
+first of master, main, develop or development that exists.
+
+When the branch has an upstream, the squashed branch is pushed with
+'git push --force-with-lease' afterwards.
+
+Refuses to run with uncommitted changes, on the base branch itself, or on
+a detached HEAD. Also refuses when another local branch points at a commit
+between the base and HEAD (a stacked branch), since squashing would absorb
+that branch's commits.
+EOF
+}
+
+case "$1" in
+    -h | --help)
+        usage
+        exit 0
+        ;;
+    '')
+        usage >&2
+        exit 1
+        ;;
+esac
+
+message=$1
+
+current=$(git rev-parse --abbrev-ref HEAD) || exit 1
+if [ "$current" = "HEAD" ]; then
+    echo "Not on a branch (detached HEAD), nothing to squash" >&2
+    exit 1
+fi
+
+if ! git diff --quiet || ! git diff --cached --quiet; then
+    echo "You have uncommitted changes, commit or stash them first" >&2
+    exit 1
+fi
+
+# The remote default branch, e.g. origin/main.
+base=''
+for remote in $(git remote); do
+    if ref=$(git symbolic-ref --quiet "refs/remotes/$remote/HEAD"); then
+        base=${ref#refs/remotes/}
+        break
+    fi
+done
+if [ -z "$base" ]; then
+    for name in master main develop development; do
+        if git rev-parse --verify --quiet "refs/heads/$name" >/dev/null; then
+            base=$name
+            break
+        fi
+    done
+fi
+if [ -z "$base" ]; then
+    echo "Could not determine the base branch" >&2
+    exit 1
+fi
+
+if [ "$current" = "${base#*/}" ]; then
+    echo "On base branch '$current', refusing to squash it" >&2
+    exit 1
+fi
+
+merge_base=$(git merge-base "$base" HEAD) || exit 1
+
+count=$(git rev-list --count "$merge_base..HEAD")
+if [ "$count" -lt 2 ]; then
+    echo "Nothing to squash: $count commit(s) on '$current' since '$base'"
+    exit 0
+fi
+
+# A local branch tip strictly between the merge base and HEAD means the
+# current branch is stacked on it; squashing would absorb its commits.
+head=$(git rev-parse HEAD)
+stacked=$(git for-each-ref --format='%(refname:short)' refs/heads |
+    while read -r branch; do
+        [ "$branch" = "$current" ] && continue
+        tip=$(git rev-parse "refs/heads/$branch")
+        [ "$tip" = "$merge_base" ] && continue
+        [ "$tip" = "$head" ] && continue
+        if git merge-base --is-ancestor "$merge_base" "$tip" &&
+            git merge-base --is-ancestor "$tip" "$head"; then
+            echo "$branch"
+        fi
+    done)
+if [ -n "$stacked" ]; then
+    echo "Refusing to squash: '$current' is stacked on top of:" >&2
+    printf '%s\n' "$stacked" | sed 's/^/  /' >&2
+    echo "Squashing down to '$base' would absorb those branches' commits" >&2
+    exit 1
+fi
+
+echo "Squashing $count commits on '$current' since '$base' into one"
+git reset --soft "$merge_base" &&
+    git commit -m "$message" || exit 1
+
+if git rev-parse --verify --quiet "$current@{u}" >/dev/null 2>&1; then
+    echo "Pushing '$current' with --force-with-lease"
+    git push --force-with-lease
+fi

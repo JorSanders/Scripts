@@ -1,8 +1,50 @@
-#!/bin/bash
+#!/bin/sh
 
-if [[ $* == *"--help"* ]]; then
-    echo "Clean all local git branches except master|development|develop"
-    exit 0
+usage() {
+    cat <<'EOF'
+Usage: cb
+
+Cleans up local git branches: deletes every local branch that has no
+branch of the same name on any remote.
+
+Runs 'git fetch --prune' first so the remote state is current. The
+currently checked out branch is never deleted, and branches checked out
+in other worktrees are skipped.
+EOF
+}
+
+case "$1" in
+    -h | --help)
+        usage
+        exit 0
+        ;;
+esac
+
+if [ -z "$(git remote)" ]; then
+    echo "No remotes configured, nothing to compare against" >&2
+    exit 1
 fi
 
-git branch | grep -iEv "master|development|develop|\\*" | xargs git branch -D
+git fetch --prune
+
+current=$(git rev-parse --abbrev-ref HEAD)
+
+# Branches checked out in a worktree, one refs/heads/... per line.
+in_worktrees=$(git worktree list --porcelain | awk '/^branch /{print substr($0, 8)}')
+
+git for-each-ref --format='%(refname:short)' refs/heads | while read -r branch; do
+    [ "$branch" = "$current" ] && continue
+
+    if printf '%s\n' "$in_worktrees" | grep -Fxq "refs/heads/$branch"; then
+        echo "Skipping '$branch', it is checked out in a worktree"
+        continue
+    fi
+
+    for remote in $(git remote); do
+        if git rev-parse --verify --quiet "refs/remotes/$remote/$branch" >/dev/null; then
+            continue 2
+        fi
+    done
+
+    git branch -D "$branch"
+done

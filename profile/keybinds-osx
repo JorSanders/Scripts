@@ -1,0 +1,10 @@
+#!/bin/sh
+
+# Sourced by zsh; bindkey is a zsh builtin.
+if [ "$(uname)" != "Darwin" ] || [ -z "$ZSH_VERSION" ]; then
+    return
+fi
+
+bindkey -e                      # Use emacs key bindings (Ctrl+R for history search, etc.)
+bindkey '^[[1;3D' backward-word # Option+Left
+bindkey '^[[1;3C' forward-word  # Option+Right

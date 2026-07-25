@@ -1,3 +1,7 @@
 ; Secret files are for tokens or other "Secret stuff"
 *.secret
 .DS_Store
+
+; Machine-local scripts (work-specific etc.), only the README is committed
+bin/local/*
+!bin/local/README.md

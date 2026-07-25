@@ -1,18 +1,18 @@
-#!/bin/bash
+#!/bin/sh
 
-if ! hostname | grep -iqE 'raspberry' &> /dev/null ; then
+if ! hostname | grep -iq 'raspberry'; then
     return
 fi
 
-if ls ~/.keychain/*-sh &> /dev/null ; then
-    keychain --agents ssh &> /dev/null
+if ls ~/.keychain/*-sh >/dev/null 2>&1; then
+    keychain --agents ssh >/dev/null 2>&1
     # shellcheck source=/dev/null
-    source ~/.keychain/*-sh
+    . ~/.keychain/*-sh
 fi
 
-#ssh-add -l &> /dev/null || ssh-add "$HOME"/.ssh/*.key
+#ssh-add -l > /dev/null 2>&1 || ssh-add "$HOME"/.ssh/*.key
 
-if ! pgrep gpg-agent &> /dev/null ; then
+if ! pgrep gpg-agent >/dev/null 2>&1; then
     GPG_TTY=$(tty)
     export GPG_TTY
     # shellcheck disable=SC2046
