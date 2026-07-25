@@ -1,6 +1,6 @@
-#!/bin/bash
+#!/bin/sh
 
-if [[ $* == *"--help"* ]]; then
+if [ "$1" = "--help" ]; then
     echo "Quickly commits and current changes under a 'WIP' message."
     exit 0
 fi

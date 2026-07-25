@@ -7,26 +7,10 @@ I highly recommend not running other people commands blindly on your machine. So
 
 ## Setup
 
-### .bashrc
-Add the following to your .bashrc
+Run the install script. It adds bin/ and bin/local/ (gitignored,
+machine-local scripts) to PATH and sources every file under profile/ and
+aliasses/ from your shell rc file (~/.zshrc for zsh, ~/.bashrc for bash),
+see `./install --help`:
 ```shell
-# Jor bin in PATH
-export PATH="$HOME/Projects/Scripts/bin:$PATH"
-
-# Jor .profile
-for f in  $HOME/Projects/Scripts/profile/*; do
-  . "$f"
-done
-
-# Jor aliasses
-for f in  $HOME/Projects/Scripts/aliasses/*; do
-  . "$f"
-done
-```
-
-### Config
-```shell
-mkdir -p ~/.ssh
-cp config/ssh/config ~/.ssh/config
-chmod 600 ~/.ssh/config
+./install
 ```

@@ -1,16 +1,70 @@
-#!/bin/bash
+#!/bin/sh
 
-if [[ $* == *"--help"* ]]; then
-    echo "Tries to find a project under ~/Source and opens it in VScode."
-    echo "TODO: allow for other IDEs to work as well"
-    exit 0
+usage() {
+    cat <<'EOF'
+Usage: sw <project>
+
+Finds a project folder under $PROJECTS_DIR (default: ~/Projects) and opens
+it in VSCode. Folders are searched for directly under the projects folder
+and one level deeper. <project> is matched against folder names as a
+case-insensitive extended regex; whole-name matches win over partial
+matches, and direct children win over deeper folders.
+
+If multiple folders match equally well, all matches are listed and nothing
+is opened.
+EOF
+}
+
+case "$1" in
+    ''|-h|--help)
+        usage
+        exit 0
+        ;;
+esac
+
+name=$1
+projects=${PROJECTS_DIR:-$HOME/Projects}
+
+if [ ! -d "$projects" ]; then
+    echo "Projects folder '$projects' does not exist" >&2
+    exit 1
 fi
 
-set -e
+if ! command -v code > /dev/null 2>&1; then
+    echo "VSCode's 'code' command not found on PATH" >&2
+    exit 1
+fi
 
-# shellcheck source=/dev/null
-source "${BASH_SOURCE%/*}/lib/project_root"
+# Opens a single match in VSCode, or lists them all when ambiguous.
+open_match() {
+    matches=$1
 
-project_location=$(project_root "$1")
+    [ -n "$matches" ] || return 1
 
-(cd "$project_location" && code .)
+    count=$(printf '%s\n' "$matches" | wc -l | tr -d ' ')
+    if [ "$count" -gt 1 ]; then
+        echo "'$name' matches multiple projects:" >&2
+        printf '%s\n' "$matches" | sed 's/^/  /' >&2
+        exit 1
+    fi
+
+    echo "Opening $matches"
+    code "$matches"
+    exit $?
+}
+
+# Lists folders between the given depths whose name matches the regex.
+match_projects() {
+    find -L "$projects" -mindepth "$1" -maxdepth "$2" \
+        -type d ! -path '*/.*' 2>/dev/null |
+        while read -r dir; do
+            basename "$dir" | grep -iqE "$3" && echo "$dir"
+        done
+}
+
+open_match "$(match_projects 1 2 "^($name)\$")"
+open_match "$(match_projects 1 1 "$name")"
+open_match "$(match_projects 2 2 "$name")"
+
+echo "No project matching '$name' found under $projects" >&2
+exit 1

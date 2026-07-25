@@ -1,6 +1,6 @@
-#!/bin/bash
+#!/bin/sh
 
-if [ $# -lt 3 ] || [[ $* == *"--help"* ]]; then
+if [ $# -lt 3 ] || [ "$1" = "--help" ]; then
     echo "Create an validate a CSR en generate valid_cert.pem"
     echo "\$1 .csr file"
     echo "\$2 CA cert.pem"

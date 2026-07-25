@@ -1,6 +1,0 @@
-Host github.com
-    User git
-Host *amazonaws.com
-    User ec2-user
-Host rpi.jor.dev
-    User alarm

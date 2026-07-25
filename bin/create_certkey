@@ -1,6 +1,6 @@
-#!/bin/bash
+#!/bin/sh
 
-if [ $# -lt 1 ] || [[ $* == *"--help"* ]]; then
+if [ $# -lt 1 ] || [ "$1" = "--help" ]; then
     echo "Create an RSA key.pem and cert.pem"
     echo "\$1 CN for the cert"
     exit 0

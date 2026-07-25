@@ -1,6 +1,6 @@
-#!/bin/bash
+#!/bin/sh
 
-if ! ls "$HOME/.pyenv" &> /dev/null ; then
+if [ ! -d "$HOME/.pyenv" ]; then
     return
 fi
 

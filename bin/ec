@@ -1,0 +1,32 @@
+#!/bin/sh
+
+usage() {
+    cat <<'EOF'
+Usage: ec
+
+Creates an empty commit with the message 'chore: empty commit' and pushes
+it, e.g. to trigger CI.
+
+When the branch has no upstream yet, it is pushed with -u to set one.
+EOF
+}
+
+case "$1" in
+    -h|--help)
+        usage
+        exit 0
+        ;;
+esac
+
+git commit --allow-empty -m "chore: empty commit" || exit 1
+
+if git rev-parse --verify --quiet '@{u}' >/dev/null 2>&1; then
+    git push
+else
+    remote=$(git remote | head -n 1)
+    if [ -z "$remote" ]; then
+        echo "No remote to push to" >&2
+        exit 1
+    fi
+    git push -u "$remote" HEAD
+fi
