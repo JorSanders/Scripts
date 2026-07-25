@@ -10,8 +10,10 @@ and one level deeper. <project> is matched against folder names as a
 case-insensitive extended regex; whole-name matches win over partial
 matches, and direct children win over deeper folders.
 
-If multiple folders match equally well, all matches are listed and nothing
-is opened.
+If multiple folders match equally well but one folder's name is a prefix
+of all the others (nos-next among nos-next-copy and nos-next-2), that main
+folder is opened. Genuinely different matches are listed and nothing is
+opened.
 EOF
 }
 
@@ -35,6 +37,34 @@ if ! command -v code >/dev/null 2>&1; then
     exit 1
 fi
 
+# Prints the match whose folder name is a prefix of all other matches'
+# names (e.g. nos-next among nos-next-copy and nos-next-2). Prints nothing
+# when the matches are genuinely different.
+main_of() {
+    shortest=''
+    main=''
+    while IFS= read -r dir; do
+        base=$(basename "$dir" | tr '[:upper:]' '[:lower:]')
+        if [ -z "$shortest" ] || [ "${#base}" -lt "${#shortest}" ]; then
+            shortest=$base
+            main=$dir
+        fi
+    done <<EOF
+$1
+EOF
+    while IFS= read -r dir; do
+        [ "$dir" = "$main" ] && continue
+        base=$(basename "$dir" | tr '[:upper:]' '[:lower:]')
+        case "$base" in
+            "$shortest"?*) ;;
+            *) return 1 ;;
+        esac
+    done <<EOF
+$1
+EOF
+    printf '%s\n' "$main"
+}
+
 # Opens a single match in VSCode, or lists them all when ambiguous.
 open_match() {
     matches=$1
@@ -42,14 +72,19 @@ open_match() {
     [ -n "$matches" ] || return 1
 
     count=$(printf '%s\n' "$matches" | wc -l | tr -d ' ')
+    match=$matches
     if [ "$count" -gt 1 ]; then
-        echo "'$name' matches multiple projects:" >&2
-        printf '%s\n' "$matches" | sed 's/^/  /' >&2
-        exit 1
+        match=$(main_of "$matches")
+        if [ -z "$match" ]; then
+            echo "'$name' matches multiple projects:" >&2
+            printf '%s\n' "$matches" | sed 's/^/  /' >&2
+            exit 1
+        fi
+        echo "The other matches are copies of $(basename "$match") with a suffix"
     fi
 
-    echo "Opening $matches"
-    code "$matches"
+    echo "Opening $match"
+    code "$match"
     exit $?
 }
 

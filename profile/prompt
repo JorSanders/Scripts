@@ -1,0 +1,20 @@
+#!/bin/sh
+
+# Show the current git branch in the prompt, oh-my-zsh style:
+#   ➜ dir (branch)
+
+git_branch() {
+    branch=$(git symbolic-ref --short -q HEAD 2>/dev/null) ||
+        branch=$(git rev-parse --short HEAD 2>/dev/null) ||
+        return 0
+    printf ' (%s)' "$branch"
+}
+
+if [ -n "$ZSH_VERSION" ]; then
+    setopt PROMPT_SUBST
+    # shellcheck disable=SC2016,SC2034
+    PROMPT='%(?.%F{green}.%F{red})➜%f %F{cyan}%c%f%F{blue}$(git_branch)%f '
+elif [ -n "$BASH_VERSION" ]; then
+    # shellcheck disable=SC2016
+    PS1='➜ \[\e[36m\]\W\[\e[34m\]$(git_branch)\[\e[0m\] '
+fi
