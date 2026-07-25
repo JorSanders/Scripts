@@ -16,7 +16,7 @@ EOF
 }
 
 case "$1" in
-    ''|-h|--help)
+    '' | -h | --help)
         usage
         exit 0
         ;;
@@ -30,7 +30,7 @@ if [ ! -d "$projects" ]; then
     exit 1
 fi
 
-if ! command -v code > /dev/null 2>&1; then
+if ! command -v code >/dev/null 2>&1; then
     echo "VSCode's 'code' command not found on PATH" >&2
     exit 1
 fi

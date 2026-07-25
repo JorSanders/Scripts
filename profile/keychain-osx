@@ -4,6 +4,6 @@ if [ "$(uname)" != "Darwin" ]; then
     return
 fi
 
-if ! ssh-add -l > /dev/null 2>&1 && ls "$HOME"/.ssh/*.key > /dev/null 2>&1; then
+if ! ssh-add -l >/dev/null 2>&1 && ls "$HOME"/.ssh/*.key >/dev/null 2>&1; then
     ssh-add "$HOME"/.ssh/*.key
 fi

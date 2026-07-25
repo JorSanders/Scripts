@@ -33,7 +33,7 @@ EOF
 }
 
 case "$1" in
-    ''|-h|--help)
+    '' | -h | --help)
         usage
         exit 0
         ;;
@@ -98,9 +98,9 @@ checkout_match() {
 # Returns the well-known counterpart of a branch name, if any.
 alias_for() {
     case "$1" in
-        master)      echo main ;;
-        main)        echo master ;;
-        develop)     echo development ;;
+        master) echo main ;;
+        main) echo master ;;
+        develop) echo development ;;
         development) echo develop ;;
     esac
 }
