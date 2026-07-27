@@ -97,7 +97,8 @@ match_projects() {
         done
 }
 
-open_match "$(match_projects 1 2 "^($name)\$")"
+open_match "$(match_projects 1 1 "^($name)\$")"
+open_match "$(match_projects 2 2 "^($name)\$")"
 open_match "$(match_projects 1 1 "$name")"
 open_match "$(match_projects 2 2 "$name")"
 

@@ -1,20 +1,42 @@
 #!/bin/sh
 
 # Show the current git branch in the prompt, oh-my-zsh style:
-#   ➜ dir (branch)
+#   ➜ repo/path/in/repo (branch ✗3)
+# Inside a git repo the path is shown relative to the repo's parent, so the
+# repo name stays visible. Outside a repo the full path is shown, with ~
+# for the home folder. ✗3 is the number of changed (staged, unstaged or
+# untracked) files; it is hidden when the working tree is clean.
 
 git_branch() {
     branch=$(git symbolic-ref --short -q HEAD 2>/dev/null) ||
         branch=$(git rev-parse --short HEAD 2>/dev/null) ||
         return 0
-    printf ' (%s)' "$branch"
+    changed=$(git status --porcelain 2>/dev/null | wc -l | tr -d ' ')
+    if [ "$changed" -gt 0 ]; then
+        printf ' (%s ✗%s)' "$branch" "$changed"
+    else
+        printf ' (%s)' "$branch"
+    fi
+}
+
+prompt_dir() {
+    root=$(git rev-parse --show-toplevel 2>/dev/null)
+    if [ -n "$root" ]; then
+        printf '%s%s' "$(basename "$root")" "${PWD#"$root"}"
+        return 0
+    fi
+    case $PWD in
+        "$HOME") printf '~' ;;
+        "$HOME"/*) printf '~%s' "${PWD#"$HOME"}" ;;
+        *) printf '%s' "$PWD" ;;
+    esac
 }
 
 if [ -n "$ZSH_VERSION" ]; then
     setopt PROMPT_SUBST
     # shellcheck disable=SC2016,SC2034
-    PROMPT='%(?.%F{green}.%F{red})➜%f %F{cyan}%c%f%F{blue}$(git_branch)%f '
+    PROMPT='%(?.%F{green}.%F{red})➜%f %F{cyan}$(prompt_dir)%f%F{blue}$(git_branch)%f '
 elif [ -n "$BASH_VERSION" ]; then
     # shellcheck disable=SC2016
-    PS1='➜ \[\e[36m\]\W\[\e[34m\]$(git_branch)\[\e[0m\] '
+    PS1='➜ \[\e[36m\]$(prompt_dir)\[\e[34m\]$(git_branch)\[\e[0m\] '
 fi
