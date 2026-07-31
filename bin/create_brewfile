@@ -1,0 +1,34 @@
+#!/bin/sh
+
+usage() {
+    cat <<'EOF'
+Usage: create_brewfile
+
+Writes packages/Brewfile in this repo: the Homebrew formulae,
+casks and taps installed on this machine. Dependencies are excluded,
+so it only lists what you installed yourself.
+
+Install the list on a new machine with:
+
+    brew bundle install --file=packages/Brewfile
+EOF
+}
+
+case "$1" in
+    -h | --help)
+        usage
+        exit 0
+        ;;
+esac
+
+if ! command -v brew >/dev/null 2>&1; then
+    echo "brew not found, this script only works on a machine with Homebrew installed" >&2
+    exit 1
+fi
+
+repo_dir=$(CDPATH='' cd -- "$(dirname -- "$0")/.." && pwd)
+out=$repo_dir/packages/Brewfile
+
+brew bundle dump --force --file="$out"
+
+echo "Wrote $(grep -c '^\(brew\|cask\|tap\|mas\)' "$out") entries to $out"

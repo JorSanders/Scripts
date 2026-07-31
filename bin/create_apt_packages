@@ -1,0 +1,88 @@
+#!/bin/sh
+
+usage() {
+    cat <<'EOF'
+Usage: create_apt_packages [flavor]
+
+Writes packages/apt-packages-<flavor>.txt in this repo: the apt
+packages you installed by hand on this machine.
+
+[flavor] defaults to the detected machine type: 'wsl' on WSL, 'pi' on
+a Raspberry Pi, and the OS name (e.g. 'ubuntu') otherwise. Pass it
+explicitly to write a different list.
+
+Reads /var/log/apt/history.log* for 'apt install' commands you typed,
+so packages the base image shipped with and automatic dependencies are
+not included. Packages you later removed are dropped, unless they are
+currently installed again.
+
+Install a list on a new machine with:
+
+    xargs sudo apt install -y < packages/apt-packages-<flavor>.txt
+
+Note: apt logs rotate, so installs older than the oldest history log
+are missed.
+EOF
+}
+
+case "$1" in
+    -h | --help)
+        usage
+        exit 0
+        ;;
+esac
+
+detect_flavor() {
+    if [ -n "$WSL_DISTRO_NAME" ] || grep -qi microsoft /proc/version 2>/dev/null; then
+        echo wsl
+    elif grep -qi 'raspberry pi' /proc/device-tree/model 2>/dev/null; then
+        echo pi
+    else
+        . /etc/os-release
+        echo "${ID:-linux}"
+    fi
+}
+
+flavor=${1:-$(detect_flavor)}
+
+repo_dir=$(CDPATH='' cd -- "$(dirname -- "$0")/.." && pwd)
+out=$repo_dir/packages/apt-packages-$flavor.txt
+
+read_logs() {
+    for log in /var/log/apt/history.log*; do
+        [ -e "$log" ] || continue
+        case "$log" in
+            *.gz) zcat "$log" ;;
+            *) cat "$log" ;;
+        esac
+    done
+}
+
+# Emit one "i <pkg>" line per installed package and "r <pkg>" per
+# removed package, taken from the apt commands typed by the user.
+actions=$(read_logs | awk '
+    $1 == "Commandline:" && $2 ~ /(^|\/)apt(-get)?$/ {
+        action = ""
+        for (i = 3; i <= NF; i++) {
+            if ($i ~ /^-/) continue
+            if (action == "") {
+                if ($i == "install") action = "i"
+                else if ($i == "remove" || $i == "purge") action = "r"
+                else next
+                continue
+            }
+            print action, $i
+        }
+    }
+' | sort -u)
+
+removed=$(printf '%s\n' "$actions" | awk '$1 == "r" { print $2 }')
+
+printf '%s\n' "$actions" | awk '$1 == "i" { print $2 }' | while read -r pkg; do
+    if printf '%s\n' "$removed" | grep -qx "$pkg" && ! dpkg -s "$pkg" >/dev/null 2>&1; then
+        continue
+    fi
+    printf '%s\n' "$pkg"
+done >"$out"
+
+echo "Wrote $(wc -l <"$out") packages to $out"

@@ -1,0 +1,7 @@
+exiftool
+ffmpeg
+gh
+imagemagick
+parallel
+wslu
+yq
