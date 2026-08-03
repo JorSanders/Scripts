@@ -13,6 +13,6 @@ if [ -n "$JAVA_VERSION" ] && [ -x /usr/libexec/java_home ]; then
 else
     echo "Could not detect the java version from pom.xml, using the default java"
 fi
-mvn clean install -Dmaven.test.skip=true -Ddependency-check.skip=true
+mvn clean install -Dmaven.test.skip=true -Ddependency-check.skip=true || exit 1
 
 "$(dirname "$0")/lib/save_checksum" pom.xml
