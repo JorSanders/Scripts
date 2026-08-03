@@ -2,7 +2,7 @@
 
 usage() {
     cat <<'EOF'
-Usage: cof <file>
+Usage: checksum <file>
 
 Prints the sha256 checksum of <file>.
 EOF
@@ -14,13 +14,13 @@ case "$1" in
         exit 0
         ;;
     -*)
-        echo "Unknown option '$1', see 'cof --help'" >&2
+        echo "Unknown option '$1', see 'checksum --help'" >&2
         exit 1
         ;;
 esac
 
 if [ $# -lt 1 ]; then
-    echo "Expected a file, see 'cof --help'" >&2
+    echo "Expected a file, see 'checksum --help'" >&2
     exit 1
 fi
 

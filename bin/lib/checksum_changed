@@ -29,7 +29,7 @@ if [ $# -lt 1 ]; then
     exit 2
 fi
 
-current=$("$(dirname "$0")/cof" "$1")
+current=$("$(dirname "$0")/checksum" "$1")
 cached=$(cat ".globalignored/$1.checksum" 2>/dev/null)
 
 [ "$current" != "$cached" ]
