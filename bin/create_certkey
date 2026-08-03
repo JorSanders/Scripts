@@ -28,4 +28,7 @@ if [ $# -lt 1 ]; then
     exit 1
 fi
 
+lib=$(dirname "$0")/lib
+"$lib/require_command" openssl || exit 1
+
 openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -sha256 -days 9000 -subj "/C=NL/ST=Noord-Holland/L=Amsterdam/O=jor.dev/OU=IT/CN=$1" -addext "subjectAltName = DNS:localhost"

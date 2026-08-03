@@ -1,0 +1,36 @@
+#!/bin/sh
+
+usage() {
+    cat <<'EOF'
+Usage: require_file <file>...
+
+Checks that every named file exists and is a regular file, so a script
+can stop with a clear message instead of handing a missing path to the
+tool it wraps.
+
+Exits 1 and names the first missing file on stderr.
+EOF
+}
+
+case "$1" in
+    -h | --help)
+        usage
+        exit 0
+        ;;
+    -*)
+        echo "Unknown option '$1', see 'require_file --help'" >&2
+        exit 1
+        ;;
+esac
+
+if [ $# -lt 1 ]; then
+    echo "Expected a file, see 'require_file --help'" >&2
+    exit 1
+fi
+
+for required_file in "$@"; do
+    if [ ! -f "$required_file" ]; then
+        echo "No such file: $required_file" >&2
+        exit 1
+    fi
+done

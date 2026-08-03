@@ -21,6 +21,12 @@ case "$1" in
         ;;
 esac
 
+bin=$(dirname "$0")
+lib=$bin/lib
+
+"$lib/require_command" mvn || exit 1
+"$lib/require_file" pom.xml || exit 1
+
 pull=no
 
 for arg in "$@"; do
@@ -38,12 +44,12 @@ if [ "$pull" = yes ]; then
     git pull
 fi
 
-if "$(dirname "$0")/lib/checksum_changed" pom.xml; then
+if "$lib/checksum_changed" pom.xml; then
     echo 'pom.xml changed; Running "mvn install -Dmaven.test.skip=true"'
-    "$(dirname "$0")/mci"
+    "$bin/mci" || exit 1
 fi
 
-if java_home=$("$(dirname "$0")/lib/java_home_for_pom" pom.xml); then
+if java_home=$("$lib/java_home_for_pom" pom.xml); then
     echo "Using the java in $java_home"
     JAVA_HOME=$java_home
     export JAVA_HOME

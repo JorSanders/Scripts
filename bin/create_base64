@@ -24,4 +24,8 @@ if [ $# -lt 1 ]; then
     exit 1
 fi
 
+lib=$(dirname "$0")/lib
+"$lib/require_command" openssl || exit 1
+"$lib/require_file" "$1" || exit 1
+
 openssl base64 -in "$1" -out "$1".base64.txt

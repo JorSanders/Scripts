@@ -30,7 +30,11 @@ if [ $# -gt 0 ]; then
     exit 1
 fi
 
-if java_home=$("$(dirname "$0")/lib/java_home_for_pom" pom.xml); then
+lib=$(dirname "$0")/lib
+"$lib/require_command" mvn || exit 1
+"$lib/require_file" pom.xml || exit 1
+
+if java_home=$("$lib/java_home_for_pom" pom.xml); then
     echo "Using the java in $java_home"
     JAVA_HOME=$java_home
     export JAVA_HOME
@@ -40,4 +44,4 @@ fi
 
 mvn clean install -Dmaven.test.skip=true -Ddependency-check.skip=true || exit 1
 
-"$(dirname "$0")/lib/save_checksum" pom.xml
+"$lib/save_checksum" pom.xml

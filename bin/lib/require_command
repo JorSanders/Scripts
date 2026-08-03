@@ -1,0 +1,36 @@
+#!/bin/sh
+
+usage() {
+    cat <<'EOF'
+Usage: require_command <command>...
+
+Checks that every named command is on PATH, so a script can stop with a
+clear message instead of failing on a "command not found" halfway
+through its work.
+
+Exits 1 and names the first missing command on stderr.
+EOF
+}
+
+case "$1" in
+    -h | --help)
+        usage
+        exit 0
+        ;;
+    -*)
+        echo "Unknown option '$1', see 'require_command --help'" >&2
+        exit 1
+        ;;
+esac
+
+if [ $# -lt 1 ]; then
+    echo "Expected a command, see 'require_command --help'" >&2
+    exit 1
+fi
+
+for required_command in "$@"; do
+    if ! command -v "$required_command" >/dev/null 2>&1; then
+        echo "'$required_command' not found on PATH" >&2
+        exit 1
+    fi
+done
