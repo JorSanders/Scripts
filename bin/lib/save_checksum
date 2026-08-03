@@ -22,5 +22,7 @@ if [ $# -lt 1 ]; then
     exit 1
 fi
 
-mkdir -p .globalignored
-"$(dirname "$0")/cof" "$1" >".globalignored/$1.checksum"
+checksum_file=".globalignored/$1.checksum"
+
+mkdir -p "$(dirname "$checksum_file")"
+"$(dirname "$0")/cof" "$1" >"$checksum_file"
