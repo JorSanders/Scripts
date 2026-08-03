@@ -1,0 +1,107 @@
+#!/bin/sh
+
+usage() {
+    cat <<'EOF'
+Usage: gr [remote]
+
+Opens the web URL of a git remote in the default browser.
+
+Without an argument the remote of the current branch's upstream is used,
+falling back to 'origin' and then to the first configured remote.
+
+SSH, git:// and scp-style remotes (git@host:owner/repo.git) are rewritten
+to their https equivalent; embedded credentials, ssh ports and a trailing
+.git are stripped. Remotes without a host, like local paths, have no web
+URL and are rejected.
+EOF
+}
+
+case "$1" in
+    -h | --help)
+        usage
+        exit 0
+        ;;
+    -*)
+        echo "Unknown option '$1', see 'gr --help'" >&2
+        exit 1
+        ;;
+esac
+
+if [ $# -gt 1 ]; then
+    echo "Expected at most one remote, see 'gr --help'" >&2
+    exit 1
+fi
+
+if ! git rev-parse --git-dir >/dev/null 2>&1; then
+    echo "Not inside a git repository" >&2
+    exit 1
+fi
+
+if command -v open >/dev/null 2>&1; then
+    browse=open
+elif command -v xdg-open >/dev/null 2>&1; then
+    browse=xdg-open
+else
+    echo "No 'open' or 'xdg-open' command found on PATH" >&2
+    exit 1
+fi
+
+remote=$1
+
+if [ -z "$remote" ]; then
+    branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null)
+    remote=$(git config --get "branch.$branch.remote" || true)
+fi
+
+if [ -z "$remote" ]; then
+    if git remote | grep -Fxq origin; then
+        remote=origin
+    else
+        remote=$(git remote | head -n 1)
+    fi
+fi
+
+if [ -z "$remote" ]; then
+    echo "No remotes configured, nothing to open" >&2
+    exit 1
+fi
+
+url=$(git remote get-url "$remote" 2>/dev/null)
+
+if [ -z "$url" ]; then
+    echo "Remote '$remote' does not exist" >&2
+    exit 1
+fi
+
+# Strips the scheme, any user[:password]@ and an ssh port, turns the colon
+# of scp-style remotes into a slash and drops the trailing .git.
+web=$(printf '%s\n' "$url" | sed \
+    -e 's,^[A-Za-z][A-Za-z0-9+.-]*://,,' \
+    -e 's,^[^/]*@,,' \
+    -e 's,^\([^/:]*\):[0-9][0-9]*/,\1/,' \
+    -e 's,^\([^/:]*\):,\1/,' \
+    -e 's,/*$,,' \
+    -e 's,\.git$,,')
+
+# Local paths and file:// remotes have no web URL, neither has anything that
+# did not end up as a host followed by a path.
+case "$url" in
+    /* | ./* | ../* | '~'* | file://*) web='' ;;
+esac
+
+[ -e "$url" ] && web=''
+
+host=${web%%/*}
+path=${web#"$host"}
+
+if [ -z "$host" ] || [ "$path" = / ] || [ -z "$path" ]; then
+    web=''
+fi
+
+if [ -z "$web" ]; then
+    echo "Remote '$remote' ($url) has no web URL" >&2
+    exit 1
+fi
+
+echo "Opening https://$web"
+$browse "https://$web"
