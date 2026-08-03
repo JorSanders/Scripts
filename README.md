@@ -31,7 +31,7 @@ create_apt_packages # Debian based, writes packages/apt-packages-<flavor>.txt
 ```
 
 `create_apt_packages` names the file after the machine it detects (`wsl`,
-`pi`, or the distribution id); pass a flavor to write a different one. It
+`pi`, or the distribution ID); pass a flavor to write a different one. It
 reads the apt history log, so installs older than the oldest log are
 missed.
 
