@@ -102,4 +102,4 @@ printf '%s\n' "$actions" | awk '$1 == "i" { print $2 }' | while read -r pkg; do
     printf '%s\n' "$pkg"
 done >"$out"
 
-echo "Wrote $(wc -l <"$out") packages to $out"
+echo "Wrote $(wc -l <"$out" | tr -d ' ') packages to $out"
