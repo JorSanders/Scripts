@@ -63,7 +63,7 @@ detect_flavor() {
 flavor=${1:-$(detect_flavor)}
 
 repo_dir=$(CDPATH='' cd -- "$(dirname -- "$0")/.." && pwd)
-out=$repo_dir/packages/apt-packages-$flavor.txt
+package_list=$repo_dir/packages/apt-packages-$flavor.txt
 
 read_logs() {
     for log in /var/log/apt/history.log*; do
@@ -100,6 +100,6 @@ printf '%s\n' "$actions" | awk '$1 == "i" { print $2 }' | while read -r pkg; do
         continue
     fi
     printf '%s\n' "$pkg"
-done >"$out"
+done >"$package_list"
 
-echo "Wrote $(wc -l <"$out" | tr -d ' ') packages to $out"
+echo "Wrote $(wc -l <"$package_list" | tr -d ' ') packages to $package_list"

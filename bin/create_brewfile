@@ -36,11 +36,11 @@ if ! command -v brew >/dev/null 2>&1; then
 fi
 
 repo_dir=$(CDPATH='' cd -- "$(dirname -- "$0")/.." && pwd)
-out=$repo_dir/packages/Brewfile
+brewfile=$repo_dir/packages/Brewfile
 
-if ! brew bundle dump --force --file="$out"; then
-    echo "brew bundle dump failed, $out was left as it was" >&2
+if ! brew bundle dump --force --file="$brewfile"; then
+    echo "brew bundle dump failed, $brewfile was left as it was" >&2
     exit 1
 fi
 
-echo "Wrote $(grep -c '^\(brew\|cask\|tap\|mas\)' "$out") entries to $out"
+echo "Wrote $(grep -c '^\(brew\|cask\|tap\|mas\)' "$brewfile") entries to $brewfile"

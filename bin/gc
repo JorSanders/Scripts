@@ -54,15 +54,15 @@ rev=$1
 # another worktree (locked or not) already has the branch checked out, that
 # worktree is removed first, unless it holds uncommitted changes.
 checkout_branch() {
-    other=$(git worktree list --porcelain | awk -v ref="refs/heads/$1" '
+    other_worktree=$(git worktree list --porcelain | awk -v ref="refs/heads/$1" '
         /^worktree / { path = substr($0, 10) }
         /^branch /   { if (substr($0, 8) == ref) print path }')
-    if [ -n "$other" ] && [ "$other" != "$(git rev-parse --show-toplevel)" ]; then
-        echo "Branch '$1' is checked out in worktree $other, removing it"
-        git worktree unlock "$other" >/dev/null 2>&1
-        if ! git worktree remove "$other"; then
-            echo "Could not remove worktree $other (uncommitted changes?)." >&2
-            echo "Clean it up or run: git worktree remove --force '$other'" >&2
+    if [ -n "$other_worktree" ] && [ "$other_worktree" != "$(git rev-parse --show-toplevel)" ]; then
+        echo "Branch '$1' is checked out in worktree $other_worktree, removing it"
+        git worktree unlock "$other_worktree" >/dev/null 2>&1
+        if ! git worktree remove "$other_worktree"; then
+            echo "Could not remove worktree $other_worktree (uncommitted changes?)." >&2
+            echo "Clean it up or run: git worktree remove --force '$other_worktree'" >&2
             return 1
         fi
     fi
