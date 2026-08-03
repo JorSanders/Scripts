@@ -32,14 +32,22 @@ case "$1" in
         ;;
 esac
 
+if [ ! -d /var/log/apt ]; then
+    echo "No /var/log/apt found, this script only works on a machine with apt" >&2
+    exit 1
+fi
+
 detect_flavor() {
     if [ -n "$WSL_DISTRO_NAME" ] || grep -qi microsoft /proc/version 2>/dev/null; then
         echo wsl
     elif grep -qi 'raspberry pi' /proc/device-tree/model 2>/dev/null; then
         echo pi
-    else
+    elif [ -r /etc/os-release ]; then
+        # shellcheck source=/dev/null
         . /etc/os-release
         echo "${ID:-linux}"
+    else
+        echo linux
     fi
 }
 
