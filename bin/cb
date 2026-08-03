@@ -7,9 +7,10 @@ Usage: cb
 Cleans up local git branches: deletes every local branch that has no
 branch of the same name on any remote.
 
-Runs 'git fetch --prune' first so the remote state is current. The
-currently checked out branch is never deleted, and branches checked out
-in other worktrees are skipped.
+Runs 'git fetch --prune' first so the remote state is current, and stops
+when that fetch fails rather than deciding on stale refs. The currently
+checked out branch is never deleted, and branches checked out in other
+worktrees are skipped.
 EOF
 }
 
@@ -34,9 +35,14 @@ if [ -z "$(git remote)" ]; then
     exit 1
 fi
 
-git fetch --prune
+# Without a successful fetch the remote-tracking refs may be stale, and a
+# branch that does exist on a remote would look like it does not.
+if ! git fetch --prune; then
+    echo "Could not fetch from the remotes, refusing to delete branches" >&2
+    exit 1
+fi
 
-current=$(git rev-parse --abbrev-ref HEAD)
+current=$(git rev-parse --abbrev-ref HEAD) || exit 1
 
 # Branches checked out in a worktree, one refs/heads/... per line.
 in_worktrees=$(git worktree list --porcelain | awk '/^branch /{print substr($0, 8)}')

@@ -124,7 +124,9 @@ branch_exists() {
     return 1
 }
 
-git fetch --prune
+if ! git fetch --prune; then
+    echo "Could not fetch from the remotes, using the refs already here" >&2
+fi
 
 alias=$(alias_for "$rev")
 if [ -n "$alias" ] && ! branch_exists "$rev" && branch_exists "$alias"; then
