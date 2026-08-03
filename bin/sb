@@ -21,14 +21,22 @@ case "$1" in
         ;;
 esac
 
+pull=no
+
 for arg in "$@"; do
     case "$arg" in
-        --pull)
-            echo 'Pulling'
-            git pull
+        --pull) pull=yes ;;
+        *)
+            echo "Unknown option '$arg', see 'sb --help'" >&2
+            exit 1
             ;;
     esac
 done
+
+if [ "$pull" = yes ]; then
+    echo 'Pulling'
+    git pull
+fi
 
 if "$(dirname "$0")/lib/checksum_changed" pom.xml; then
     echo 'pom.xml changed; Running "mvn install -Dmaven.test.skip=true"'

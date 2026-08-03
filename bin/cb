@@ -18,7 +18,16 @@ case "$1" in
         usage
         exit 0
         ;;
+    -*)
+        echo "Unknown option '$1', see 'cb --help'" >&2
+        exit 1
+        ;;
 esac
+
+if [ $# -gt 0 ]; then
+    echo "Expected no arguments, see 'cb --help'" >&2
+    exit 1
+fi
 
 if [ -z "$(git remote)" ]; then
     echo "No remotes configured, nothing to compare against" >&2

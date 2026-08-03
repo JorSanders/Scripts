@@ -16,6 +16,10 @@ case "$1" in
         usage
         exit 0
         ;;
+    -*)
+        echo "Unknown option '$1', see 'create_csr_cert --help'" >&2
+        exit 1
+        ;;
 esac
 
 if [ $# -lt 3 ]; then

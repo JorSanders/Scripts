@@ -19,7 +19,16 @@ case "$1" in
         usage
         exit 0
         ;;
+    -*)
+        echo "Unknown option '$1', see 'create_brewfile --help'" >&2
+        exit 1
+        ;;
 esac
+
+if [ $# -gt 0 ]; then
+    echo "Expected no arguments, see 'create_brewfile --help'" >&2
+    exit 1
+fi
 
 if ! command -v brew >/dev/null 2>&1; then
     echo "brew not found, this script only works on a machine with Homebrew installed" >&2

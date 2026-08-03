@@ -16,7 +16,16 @@ case "$1" in
         usage
         exit 0
         ;;
+    -*)
+        echo "Unknown option '$1', see 'ec --help'" >&2
+        exit 1
+        ;;
 esac
+
+if [ $# -gt 0 ]; then
+    echo "Expected no arguments, see 'ec --help'" >&2
+    exit 1
+fi
 
 git commit --allow-empty -m "chore: empty commit" || exit 1
 

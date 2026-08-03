@@ -28,7 +28,16 @@ case "$1" in
         usage >&2
         exit 1
         ;;
+    -*)
+        echo "Unknown option '$1', see 'sq --help'" >&2
+        exit 1
+        ;;
 esac
+
+if [ $# -gt 1 ]; then
+    echo "Expected a single message, quote it, see 'sq --help'" >&2
+    exit 1
+fi
 
 message=$1
 

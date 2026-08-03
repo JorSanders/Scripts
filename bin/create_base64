@@ -13,6 +13,10 @@ case "$1" in
         usage
         exit 0
         ;;
+    -*)
+        echo "Unknown option '$1', see 'create_base64 --help'" >&2
+        exit 1
+        ;;
 esac
 
 if [ $# -lt 1 ]; then

@@ -19,7 +19,16 @@ case "$1" in
         usage
         exit 0
         ;;
+    -*)
+        echo "Unknown option '$1', see 'mci --help'" >&2
+        exit 1
+        ;;
 esac
+
+if [ $# -gt 0 ]; then
+    echo "Expected no arguments, see 'mci --help'" >&2
+    exit 1
+fi
 
 if java_home=$("$(dirname "$0")/lib/java_home_for_pom" pom.xml); then
     echo "Using the java in $java_home"

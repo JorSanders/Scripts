@@ -17,6 +17,10 @@ case "$1" in
         usage
         exit 0
         ;;
+    -*)
+        echo "Unknown option '$1', see 'checksum_changed --help'" >&2
+        exit 2
+        ;;
 esac
 
 # Exit 2, because 1 already means the file did not change.

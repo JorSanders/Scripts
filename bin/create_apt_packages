@@ -30,7 +30,16 @@ case "$1" in
         usage
         exit 0
         ;;
+    -*)
+        echo "Unknown option '$1', see 'create_apt_packages --help'" >&2
+        exit 1
+        ;;
 esac
+
+if [ $# -gt 1 ]; then
+    echo "Expected at most one flavor, see 'create_apt_packages --help'" >&2
+    exit 1
+fi
 
 if [ ! -d /var/log/apt ]; then
     echo "No /var/log/apt found, this script only works on a machine with apt" >&2
