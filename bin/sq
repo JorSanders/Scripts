@@ -80,7 +80,7 @@ fi
 
 merge_base=$(git merge-base "$base" HEAD) || exit 1
 
-count=$(git rev-list --count "$merge_base..HEAD")
+count=$(git rev-list --count "$merge_base..HEAD") || exit 1
 if [ "$count" -lt 2 ]; then
     echo "Nothing to squash: $count commit(s) on '$current' since '$base'"
     exit 0
