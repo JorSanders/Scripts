@@ -35,12 +35,12 @@ if "$(dirname "$0")/lib/checksum_changed" pom.xml; then
     "$(dirname "$0")/mci"
 fi
 
-JAVA_VERSION=$(sed -n 's|.*<java\.version>[[:space:]]*\([0-9][0-9.]*\).*|\1|p' pom.xml | head -n 1)
-if [ -n "$JAVA_VERSION" ] && [ -x /usr/libexec/java_home ]; then
-    echo "Detected java version: $JAVA_VERSION"
-    JAVA_HOME=$(/usr/libexec/java_home -v "$JAVA_VERSION")
+if java_home=$("$(dirname "$0")/lib/java_home_for_pom" pom.xml); then
+    echo "Using the java in $java_home"
+    JAVA_HOME=$java_home
     export JAVA_HOME
 else
-    echo "Could not detect the java version from pom.xml, using the default java"
+    echo "Using the default java"
 fi
+
 mvn clean spring-boot:run -Dmaven.test.skip=true
