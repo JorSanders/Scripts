@@ -37,6 +37,17 @@ if ! command -v code >/dev/null 2>&1; then
     exit 1
 fi
 
+# grep exits 2 on an unusable pattern and 1 when it simply did not match,
+# so anything above 1 means <project> is not a valid regex.
+grep_status=$(
+    printf '' | grep -qE -- "$name" 2>/dev/null
+    echo $?
+)
+if [ "$grep_status" -gt 1 ]; then
+    echo "'$name' is not a valid search pattern, see 'sw --help'" >&2
+    exit 1
+fi
+
 # Prints the match whose folder name is a prefix of all other matches'
 # names (e.g. nos-next among nos-next-copy and nos-next-2). Prints nothing
 # when the matches are genuinely different.
@@ -93,7 +104,7 @@ match_projects() {
     find -L "$projects" -mindepth "$1" -maxdepth "$2" \
         -type d ! -path '*/.*' 2>/dev/null |
         while read -r dir; do
-            basename "$dir" | grep -iqE "$3" && echo "$dir"
+            basename "$dir" | grep -iqE -- "$3" && echo "$dir"
         done
 }
 
