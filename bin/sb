@@ -44,10 +44,15 @@ if [ "$pull" = yes ]; then
     git pull
 fi
 
-if "$lib/checksum_changed" pom.xml; then
-    echo 'pom.xml changed; Running "mvn install -Dmaven.test.skip=true"'
-    "$bin/mci" || exit 1
-fi
+"$lib/checksum_changed" pom.xml
+case $? in
+    0)
+        echo 'pom.xml changed; Running "mvn install -Dmaven.test.skip=true"'
+        "$bin/mci" || exit 1
+        ;;
+    1) ;;
+    *) exit 1 ;;
+esac
 
 if java_home=$("$lib/java_home_for_pom" pom.xml); then
     echo "Using the java in $java_home"

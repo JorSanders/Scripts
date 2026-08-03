@@ -7,8 +7,8 @@ Usage: checksum_changed <file>
 Tells whether <file> changed since its checksum was last stored with
 save_checksum, so a build can be skipped when nothing changed.
 
-Exits 0 when the file changed, 1 when it did not and 2 when it was
-called without a file.
+Exits 0 when the file changed, 1 when it did not, and 2 when it could
+not tell because the file is missing or unreadable.
 EOF
 }
 
@@ -29,7 +29,10 @@ if [ $# -lt 1 ]; then
     exit 2
 fi
 
-current=$("$(dirname "$0")/checksum" "$1")
+if ! current=$("$(dirname "$0")/checksum" "$1"); then
+    exit 2
+fi
+
 cached=$(cat ".globalignored/$1.checksum" 2>/dev/null)
 
 [ "$current" != "$cached" ]

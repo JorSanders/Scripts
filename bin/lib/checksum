@@ -5,6 +5,9 @@ usage() {
 Usage: checksum <file>
 
 Prints the sha256 checksum of <file>.
+
+Exits 1 when <file> cannot be read, so a caller never mistakes a failed
+read for the checksum of an empty file.
 EOF
 }
 
@@ -24,4 +27,15 @@ if [ $# -lt 1 ]; then
     exit 1
 fi
 
-shasum -a 256 "$1" | cut -d' ' -f1
+lib=$(dirname "$0")
+"$lib/require_command" shasum || exit 1
+"$lib/require_file" "$1" || exit 1
+
+# Not piped into cut, because a pipeline reports the exit status of its
+# last command and would hide a failing shasum.
+if ! shasum_output=$(shasum -a 256 "$1"); then
+    echo "Could not read $1" >&2
+    exit 1
+fi
+
+printf '%s\n' "${shasum_output%% *}"
