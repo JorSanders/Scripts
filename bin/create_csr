@@ -9,9 +9,16 @@ from an existing key. <common-name> becomes the CN of the request.
 EOF
 }
 
-if [ $# -lt 2 ] || [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
-    usage
-    exit 0
+case "$1" in
+    -h | --help)
+        usage
+        exit 0
+        ;;
+esac
+
+if [ $# -lt 2 ]; then
+    echo "Expected a key file and a common name, see 'create_csr --help'" >&2
+    exit 1
 fi
 
 openssl req -new -sha256 -key "$1" -subj "/C=NL/ST=Noord-Holland/L=Amsterdam/O=jor.dev/OU=jor.dev/CN=$2" -out cert.csr

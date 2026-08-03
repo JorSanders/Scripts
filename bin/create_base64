@@ -8,9 +8,16 @@ Writes a base64 encoded copy of <file> next to it, as <file>.base64.txt.
 EOF
 }
 
-if [ $# -lt 1 ] || [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
-    usage
-    exit 0
+case "$1" in
+    -h | --help)
+        usage
+        exit 0
+        ;;
+esac
+
+if [ $# -lt 1 ]; then
+    echo "Expected a file to encode, see 'create_base64 --help'" >&2
+    exit 1
 fi
 
 openssl base64 -in "$1" -out "$1".base64.txt

@@ -10,9 +10,16 @@ detecting pom.xml and Gemfile.lock changes.
 EOF
 }
 
-if [ $# -lt 1 ] || [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
-    usage
-    exit 0
+case "$1" in
+    -h | --help)
+        usage
+        exit 0
+        ;;
+esac
+
+if [ $# -lt 1 ]; then
+    echo "Expected a file, see 'save_checksum --help'" >&2
+    exit 1
 fi
 
 mkdir -p .globalignored

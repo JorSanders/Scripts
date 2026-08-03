@@ -8,9 +8,16 @@ Prints the SHA1 fingerprint of a PEM encoded certificate.
 EOF
 }
 
-if [ $# -lt 1 ] || [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
-    usage
-    exit 0
+case "$1" in
+    -h | --help)
+        usage
+        exit 0
+        ;;
+esac
+
+if [ $# -lt 1 ]; then
+    echo "Expected a certificate, see 'create_certificate_fingerprint --help'" >&2
+    exit 1
 fi
 
 openssl x509 -noout -fingerprint -sha1 -inform pem -in "$1"

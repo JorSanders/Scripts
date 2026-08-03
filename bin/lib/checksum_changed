@@ -7,13 +7,22 @@ Usage: checksum_changed <file>
 Tells whether <file> changed since its checksum was last stored with
 save_checksum, so a build can be skipped when nothing changed.
 
-Exits 0 when the file changed, 1 when it did not.
+Exits 0 when the file changed, 1 when it did not and 2 when it was
+called without a file.
 EOF
 }
 
-if [ $# -lt 1 ] || [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
-    usage
-    exit 0
+case "$1" in
+    -h | --help)
+        usage
+        exit 0
+        ;;
+esac
+
+# Exit 2, because 1 already means the file did not change.
+if [ $# -lt 1 ]; then
+    echo "Expected a file, see 'checksum_changed --help'" >&2
+    exit 2
 fi
 
 current=$("$(dirname "$0")/cof" "$1")

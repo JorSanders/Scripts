@@ -11,9 +11,16 @@ commit message and pushes the commit.
 EOF
 }
 
-if [ $# -lt 1 ] || [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
-    usage
-    exit 0
+case "$1" in
+    -h | --help)
+        usage
+        exit 0
+        ;;
+esac
+
+if [ $# -lt 1 ]; then
+    echo "Expected a commit message, see 'gacp --help'" >&2
+    exit 1
 fi
 
 git add .

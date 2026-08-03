@@ -9,9 +9,16 @@ truststore when it does not exist yet. keytool asks for its password.
 EOF
 }
 
-if [ $# -lt 3 ] || [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
-    usage
-    exit 0
+case "$1" in
+    -h | --help)
+        usage
+        exit 0
+        ;;
+esac
+
+if [ $# -lt 3 ]; then
+    echo "Expected a certificate, an alias and a truststore, see 'create_truststore_jks --help'" >&2
+    exit 1
 fi
 
 keytool -import -file "$1" -alias "$2" -keystore "$3"
