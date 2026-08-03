@@ -16,3 +16,28 @@ see `./install --help`:
 ```shell
 ./install
 ```
+
+## Packages
+
+`packages/` holds the packages I installed by hand, one list per machine,
+so I don't have to remember them when I redo a setup. Dependencies and
+whatever the base image shipped with are left out.
+
+Regenerate a list on the machine it belongs to:
+
+```shell
+create_brewfile     # macOS, writes packages/Brewfile
+create_apt_packages # Debian based, writes packages/apt-packages-<flavor>.txt
+```
+
+`create_apt_packages` names the file after the machine it detects (`wsl`,
+`pi`, or the distribution id); pass a flavor to write a different one. It
+reads the apt history log, so installs older than the oldest log are
+missed.
+
+Install a list on a new machine:
+
+```shell
+brew bundle install --file=packages/Brewfile
+xargs sudo apt install -y < packages/apt-packages-wsl.txt
+```
