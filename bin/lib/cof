@@ -1,8 +1,15 @@
 #!/bin/sh
 
-if [ $# -lt 1 ] || [ "$1" = "--help" ]; then
-    echo "Print the sha256 checksum of a file"
-    echo "\$1 is the file name"
+usage() {
+    cat <<'EOF'
+Usage: cof <file>
+
+Prints the sha256 checksum of <file>.
+EOF
+}
+
+if [ $# -lt 1 ] || [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
+    usage
     exit 0
 fi
 

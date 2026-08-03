@@ -1,8 +1,19 @@
 #!/bin/sh
 
-if [ $# -lt 1 ] || [ "$1" = "--help" ]; then
-    echo "Create an RSA key.pem and cert.pem"
-    echo "\$1 CN for the cert"
+usage() {
+    cat <<'EOF'
+Usage: create_certkey <common-name>
+
+Creates a self signed RSA 4096 certificate and its key in the current
+folder, as cert.pem and key.pem. <common-name> becomes the CN of the
+certificate and localhost is added as a subject alternative name.
+
+The certificate is valid for 9000 days.
+EOF
+}
+
+if [ $# -lt 1 ] || [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
+    usage
     exit 0
 fi
 

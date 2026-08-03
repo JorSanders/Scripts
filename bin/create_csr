@@ -1,9 +1,16 @@
 #!/bin/sh
 
-if [ $# -lt 2 ] || [ "$1" = "--help" ]; then
-    echo "Create a csr"
-    echo "\$1 key file .pem"
-    echo "\$2 CN for the csr"
+usage() {
+    cat <<'EOF'
+Usage: create_csr <key.pem> <common-name>
+
+Creates a certificate signing request, cert.csr, in the current folder
+from an existing key. <common-name> becomes the CN of the request.
+EOF
+}
+
+if [ $# -lt 2 ] || [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
+    usage
     exit 0
 fi
 

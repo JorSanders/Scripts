@@ -1,8 +1,17 @@
 #!/bin/sh
 
-if [ $# -lt 1 ] || [ "$1" = "--help" ]; then
-    echo "Create a PKCS12 (.pfx) truststore of a .pem file"
-    echo "\$1 .pem file"
+usage() {
+    cat <<'EOF'
+Usage: create_truststore <file.pem>
+
+Creates a PKCS12 truststore, truststore.pfx, in the current folder from
+the certificates of a PEM file. Keys are left out. openssl asks for the
+export password.
+EOF
+}
+
+if [ $# -lt 1 ] || [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
+    usage
     exit 0
 fi
 

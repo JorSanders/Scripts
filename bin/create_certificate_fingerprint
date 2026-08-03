@@ -1,8 +1,15 @@
 #!/bin/sh
 
-if [ $# -lt 1 ] || [ "$1" = "--help" ]; then
-    echo "Get SHA1 fingerprint of a .pem file."
-    echo "\$1 .pem cert"
+usage() {
+    cat <<'EOF'
+Usage: create_certificate_fingerprint <cert.pem>
+
+Prints the SHA1 fingerprint of a PEM encoded certificate.
+EOF
+}
+
+if [ $# -lt 1 ] || [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
+    usage
     exit 0
 fi
 

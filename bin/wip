@@ -1,8 +1,19 @@
 #!/bin/sh
 
-if [ "$1" = "--help" ]; then
-    echo "Quickly commits and current changes under a 'WIP' message."
-    exit 0
-fi
+usage() {
+    cat <<'EOF'
+Usage: wip
+
+Stages every change in the repository and commits them under a 'WIP'
+message.
+EOF
+}
+
+case "$1" in
+    -h | --help)
+        usage
+        exit 0
+        ;;
+esac
 
 git add . && git commit -m 'WIP'

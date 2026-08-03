@@ -1,9 +1,18 @@
 #!/bin/sh
 
-if [ $# -lt 1 ] || [ "$1" = "--help" ]; then
-    echo "Check if the checksum of a file changed since it was last saved"
-    echo "with save_checksum. Exits 0 when it changed, 1 when it did not."
-    echo "\$1 is the file name"
+usage() {
+    cat <<'EOF'
+Usage: checksum_changed <file>
+
+Tells whether <file> changed since its checksum was last stored with
+save_checksum, so a build can be skipped when nothing changed.
+
+Exits 0 when the file changed, 1 when it did not.
+EOF
+}
+
+if [ $# -lt 1 ] || [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
+    usage
     exit 0
 fi
 

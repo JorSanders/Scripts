@@ -1,10 +1,18 @@
 #!/bin/sh
 
-if [ $# -lt 3 ] || [ "$1" = "--help" ]; then
-    echo "Create an validate a CSR en generate valid_cert.pem"
-    echo "\$1 .csr file"
-    echo "\$2 CA cert.pem"
-    echo "\$3 CA key.pem"
+usage() {
+    cat <<'EOF'
+Usage: create_csr_cert <request.csr> <ca-cert.pem> <ca-key.pem>
+
+Signs a certificate signing request with a certificate authority and
+writes the signed certificate to valid_cert.pem in the current folder.
+
+The certificate is valid for 9000 days.
+EOF
+}
+
+if [ $# -lt 3 ] || [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
+    usage
     exit 0
 fi
 

@@ -1,9 +1,25 @@
 #!/bin/sh
 
-if [ "$1" = "--help" ]; then
-    echo "Performs a Maven clean install without tests and updates the pom.xml checksum"
-    exit 0
-fi
+usage() {
+    cat <<'EOF'
+Usage: mci
+
+Runs a maven clean install in the current folder, with the tests and the
+dependency check skipped, and stores the pom.xml checksum afterwards so
+sb knows the build is up to date.
+
+JAVA_HOME is set to the java version named in the pom.xml, when that
+version is installed. The checksum is only stored when the build
+succeeds.
+EOF
+}
+
+case "$1" in
+    -h | --help)
+        usage
+        exit 0
+        ;;
+esac
 
 JAVA_VERSION=$(sed -n 's|.*<java\.version>[[:space:]]*\([0-9][0-9.]*\).*|\1|p' pom.xml | head -n 1)
 if [ -n "$JAVA_VERSION" ] && [ -x /usr/libexec/java_home ]; then

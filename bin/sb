@@ -1,11 +1,25 @@
 #!/bin/sh
 
-if [ "$1" = "--help" ]; then
-    echo "Start a spring boot server"
-    echo "Does a maven clean install if the pom.xml changed"
-    echo " --pull to git pull before starting"
-    exit 0
-fi
+usage() {
+    cat <<'EOF'
+Usage: sb [--pull]
+
+Starts the spring boot application in the current folder with
+'mvn spring-boot:run', with the tests skipped.
+
+Runs mci first when the pom.xml changed since the last build, so the
+dependencies in your local maven repository stay up to date.
+
+    --pull  git pull before starting
+EOF
+}
+
+case "$1" in
+    -h | --help)
+        usage
+        exit 0
+        ;;
+esac
 
 for arg in "$@"; do
     case "$arg" in

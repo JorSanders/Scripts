@@ -1,8 +1,15 @@
 #!/bin/sh
 
-if [ $# -lt 1 ] || [ "$1" = "--help" ]; then
-    echo "_base64.txt copy of file"
-    echo "\$1 original filename"
+usage() {
+    cat <<'EOF'
+Usage: create_base64 <file>
+
+Writes a base64 encoded copy of <file> next to it, as <file>.base64.txt.
+EOF
+}
+
+if [ $# -lt 1 ] || [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
+    usage
     exit 0
 fi
 

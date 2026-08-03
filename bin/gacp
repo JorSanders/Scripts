@@ -2,13 +2,20 @@
 
 set -e
 
-if [ $# -lt 1 ] || [ "$1" = "--help" ]; then
-    echo "git adds, commits and pushes"
-    echo "\$1 is the commit message"
+usage() {
+    cat <<'EOF'
+Usage: gacp <message>
+
+Stages every change in the repository, commits them with <message> as the
+commit message and pushes the commit.
+EOF
+}
+
+if [ $# -lt 1 ] || [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
+    usage
     exit 0
 fi
 
-# Git add commit push
 git add .
 git commit -m "$1"
 git push

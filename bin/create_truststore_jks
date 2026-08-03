@@ -1,10 +1,16 @@
 #!/bin/sh
 
-if [ $# -lt 3 ] || [ "$1" = "--help" ]; then
-    echo "Create a .jks truststore of a .pem file. Or add a pem to a truststore"
-    echo "\$1 .pem cert"
-    echo "\$2 alias for the cert in the truststore"
-    echo "\$3 .jks file"
+usage() {
+    cat <<'EOF'
+Usage: create_truststore_jks <cert.pem> <alias> <truststore.jks>
+
+Adds a certificate to a JKS truststore under <alias>, creating the
+truststore when it does not exist yet. keytool asks for its password.
+EOF
+}
+
+if [ $# -lt 3 ] || [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
+    usage
     exit 0
 fi
 

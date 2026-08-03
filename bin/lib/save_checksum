@@ -1,9 +1,17 @@
 #!/bin/sh
 
-if [ $# -lt 1 ] || [ "$1" = "--help" ]; then
-    echo "Save the checksum of a file under .globalignored."
-    echo "Useful for detecting Gemfile.lock and pom.xml changes."
-    echo "\$1 is the file name"
+usage() {
+    cat <<'EOF'
+Usage: save_checksum <file>
+
+Stores the sha256 checksum of <file> under .globalignored in the current
+folder, for checksum_changed to compare against later. Useful for
+detecting pom.xml and Gemfile.lock changes.
+EOF
+}
+
+if [ $# -lt 1 ] || [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
+    usage
     exit 0
 fi
 
