@@ -12,8 +12,9 @@ matches, and direct children win over deeper folders.
 
 If multiple folders match equally well but one folder's name is a prefix
 of all the others (nos-next among nos-next-copy and nos-next-2), that main
-folder is opened. Genuinely different matches are listed and nothing is
-opened.
+folder is opened. Genuinely different matches are offered as a menu: move
+with the arrow keys, open the highlighted folder with enter, and cancel
+with q.
 EOF
 }
 
@@ -35,6 +36,7 @@ fi
 
 name=$1
 projects=${PROJECTS_DIR:-$HOME/Projects}
+lib=$(dirname "$0")/lib
 
 if [ ! -d "$projects" ]; then
     echo "Projects folder '$projects' does not exist" >&2
@@ -85,7 +87,7 @@ EOF
     printf '%s\n' "$main"
 }
 
-# Opens a single match in VSCode, or lists them all when ambiguous.
+# Opens a single match in VSCode, or asks which one when ambiguous.
 open_match() {
     matches=$1
 
@@ -95,12 +97,12 @@ open_match() {
     match=$matches
     if [ "$count" -gt 1 ]; then
         match=$(main_of "$matches")
-        if [ -z "$match" ]; then
-            echo "'$name' matches multiple projects:" >&2
-            printf '%s\n' "$matches" | sed 's/^/  /' >&2
-            exit 1
+        if [ -n "$match" ]; then
+            echo "The other matches are copies of $(basename "$match") with a suffix"
+        else
+            match=$(printf '%s\n' "$matches" |
+                "$lib/pick" "'$name' matches multiple projects:") || exit 1
         fi
-        echo "The other matches are copies of $(basename "$match") with a suffix"
     fi
 
     echo "Opening $match"

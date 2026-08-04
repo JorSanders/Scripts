@@ -27,8 +27,9 @@ that worktree removed before being checked out here. A worktree holding
 uncommitted changes is left alone and gc exits with an error instead.
 
 If a match is ambiguous (multiple names, or the same branch on multiple
-remotes), all matches are listed and nothing is checked out. Disambiguate
-remotes with a prefix, e.g. 'gc upstream/my-branch'.
+remotes), the matches are offered as a menu: move with the arrow keys,
+check out the highlighted one with enter, and cancel with q. A remote can
+also be disambiguated with a prefix, e.g. 'gc upstream/my-branch'.
 EOF
 }
 
@@ -49,6 +50,7 @@ if [ $# -gt 1 ]; then
 fi
 
 rev=$1
+lib=$(dirname "$0")/lib
 
 # Checks out a local branch and pulls it when it has an upstream. When
 # another worktree (locked or not) already has the branch checked out, that
@@ -72,33 +74,29 @@ checkout_branch() {
     fi
 }
 
-# Checks out a single partial match, or lists them all when ambiguous.
+# Checks out a single partial match, or asks which one when ambiguous.
 checkout_match() {
     kind=$1
     matches=$2
 
     [ -n "$matches" ] || return 1
 
-    count=$(printf '%s\n' "$matches" | wc -l | tr -d ' ')
-    if [ "$count" -gt 1 ]; then
-        echo "'$rev' matches multiple $kind:" >&2
-        printf '%s\n' "$matches" | sed 's/^/  /' >&2
-        exit 1
-    fi
+    match=$(printf '%s\n' "$matches" |
+        "$lib/pick" "'$rev' matches multiple $kind:") || exit 1
 
     case "$kind" in
         'local branches')
-            echo "Checking out local branch '$matches' (matched '$rev')"
-            checkout_branch "$matches"
+            echo "Checking out local branch '$match' (matched '$rev')"
+            checkout_branch "$match"
             ;;
         'remote branches')
-            branch=${matches#*/}
-            echo "Checking out remote branch '$matches' as '$branch'"
-            git checkout -b "$branch" --track "$matches"
+            branch=${match#*/}
+            echo "Checking out remote branch '$match' as '$branch'"
+            git checkout -b "$branch" --track "$match"
             ;;
         'tags')
-            echo "Checking out tag '$matches' (matched '$rev')"
-            git checkout "tags/$matches"
+            echo "Checking out tag '$match' (matched '$rev')"
+            git checkout "tags/$match"
             ;;
     esac
     exit $?

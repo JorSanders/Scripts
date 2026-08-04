@@ -1,0 +1,234 @@
+#!/bin/sh
+
+usage() {
+    cat <<'EOF'
+Usage: pick <question>
+
+Reads options from stdin, one per line, and asks which one to use. The
+chosen option is printed on stdout, the question and the menu go to the
+terminal, so the output can be captured:
+
+    choice=$(printf 'one\ntwo\n' | pick 'Which one?') || exit 1
+
+<question> is shown above the menu. Move through the options with the up
+and down arrows (or k and j), take the highlighted one with enter, and
+cancel with q or escape. A single option is used without asking.
+
+Exits 1 without printing an option when the choice is cancelled, or when
+there are no options at all.
+
+Terminals that cannot draw the menu, and menus that do not fit on the
+screen, fall back to a numbered question: answer with the number of an
+option, or with q to cancel.
+
+Exits 1 as well when there is no terminal to ask on, for instance in a
+script or a pipeline, and then writes the question and the options to
+stderr so they are not lost.
+EOF
+}
+
+case "$1" in
+    -h | --help)
+        usage
+        exit 0
+        ;;
+    '')
+        echo "Expected a question, see 'pick --help'" >&2
+        exit 1
+        ;;
+    -*)
+        echo "Unknown option '$1', see 'pick --help'" >&2
+        exit 1
+        ;;
+esac
+
+if [ $# -gt 1 ]; then
+    echo "Expected a single question, quote it, see 'pick --help'" >&2
+    exit 1
+fi
+
+question=$1
+options=$(cat)
+
+if [ -z "$options" ]; then
+    echo "$question" >&2
+    echo "Nothing to pick from" >&2
+    exit 1
+fi
+
+count=$(printf '%s\n' "$options" | wc -l | tr -d ' ')
+
+if [ "$count" -eq 1 ]; then
+    printf '%s\n' "$options"
+    exit 0
+fi
+
+option_at() {
+    printf '%s\n' "$options" | sed -n "${1}p"
+}
+
+numbered() {
+    printf '%s\n' "$options" | awk '{ printf "  %d) %s\n", NR, $0 }'
+}
+
+# /dev/tty exists even without a controlling terminal, opening it is what
+# fails there, and the subshell keeps that failure from ending this script.
+if ! (: <>/dev/tty) 2>/dev/null; then
+    echo "$question" >&2
+    numbered >&2
+    exit 1
+fi
+
+# The terminal is both read from and written to, and stdout is left alone so
+# the chosen option can be captured by whoever runs this.
+exec 3<>/dev/tty
+
+# Asks by number, for terminals the menu below cannot be drawn on.
+ask_for_number() {
+    echo "$question" >&3
+    numbered >&3
+
+    while :; do
+        printf '%s' "Number [1-$count], q to cancel: " >&3
+
+        if ! IFS= read -r answer <&3; then
+            echo >&3
+            return 1
+        fi
+
+        case "$answer" in
+            '' | q | Q) return 1 ;;
+            *[!0-9]*) answer='' ;;
+        esac
+
+        # An answer with more digits than the highest number cannot be valid,
+        # and dropping it here keeps a very long line of digits out of the
+        # arithmetic comparison below, which not every shell survives.
+        [ "${#answer}" -le "${#count}" ] || answer=''
+
+        if [ -n "$answer" ] && [ "$answer" -ge 1 ] && [ "$answer" -le "$count" ]; then
+            option_at "$answer"
+            return 0
+        fi
+
+        echo "Answer with a number between 1 and $count, or q to cancel" >&3
+    done
+}
+
+# True when every option is a single line on this terminal and the whole menu
+# fits on the screen, which is what redrawing it in place needs.
+menu_fits() {
+    # tput reports the size of whatever terminal it is handed, and falls back
+    # to the size the terminal type describes when handed none.
+    rows=$(tput lines <&3 2>/dev/null)
+    columns=$(tput cols <&3 2>/dev/null)
+    case "$rows" in
+        '' | *[!0-9]*) return 1 ;;
+    esac
+    case "$columns" in
+        '' | *[!0-9]*) return 1 ;;
+    esac
+
+    [ "$((count + 2))" -le "$rows" ] || return 1
+
+    printf '%s\n' "$options" | while IFS= read -r option; do
+        [ "$((${#option} + 2))" -le "$columns" ] || exit 1
+    done
+}
+
+# Draws the options with the selected one highlighted, one line each.
+draw_menu() {
+    printf '%s\n' "$options" | awk -v selected="$selected" '
+        {
+            if (NR == selected) printf "\033[K\033[7m> %s\033[0m\n", $0
+            else                printf "\033[K  %s\n", $0
+        }' >&3
+}
+
+restore_terminal() {
+    stty "$terminal_state" <&3 2>/dev/null
+    printf '\033[?25h' >&3
+}
+
+escape=$(printf '\033')
+carriage_return=$(printf '\r')
+
+# Reads a single keypress and prints what it means: up, down, select, cancel,
+# or nothing at all for the keys that are ignored.
+read_key() {
+    key=$(dd bs=1 count=1 2>/dev/null <&3)
+
+    case "$key" in
+        # Enter arrives as a newline or a carriage return, both of which the
+        # command substitution above leaves as an empty key.
+        '' | "$carriage_return") echo select ;;
+        k | K) echo up ;;
+        j | J) echo down ;;
+        q | Q) echo cancel ;;
+        "$escape")
+            # Waiting for the two bytes that complete an arrow key, '[A' or,
+            # on terminals in application mode, 'OA'. They are read one at a
+            # time so a keypress right behind them is left for the next read,
+            # and nothing follows escape itself, which cancels.
+            stty min 0 time 1 <&3
+            introducer=$(dd bs=1 count=1 2>/dev/null <&3)
+            direction=$(dd bs=1 count=1 2>/dev/null <&3)
+            stty min 1 time 0 <&3
+            case "$introducer$direction" in
+                '[A' | 'OA') echo up ;;
+                '[B' | 'OB') echo down ;;
+                '') echo cancel ;;
+            esac
+            ;;
+    esac
+}
+
+# Asks with a menu that is redrawn in place on every keypress.
+ask_with_menu() {
+    selected=1
+
+    trap 'restore_terminal; exit 1' HUP INT TERM
+
+    # Keypresses are wanted one at a time, unbuffered and unechoed, while
+    # ctrl-c is left alone so it still interrupts through the trap above.
+    stty -echo -icanon min 1 time 0 <&3
+    printf '\033[?25l' >&3
+
+    echo "$question" >&3
+    draw_menu
+
+    while :; do
+        case "$(read_key)" in
+            up)
+                selected=$((selected - 1))
+                [ "$selected" -ge 1 ] || selected=$count
+                ;;
+            down)
+                selected=$((selected + 1))
+                [ "$selected" -le "$count" ] || selected=1
+                ;;
+            select)
+                restore_terminal
+                option_at "$selected"
+                return 0
+                ;;
+            cancel)
+                restore_terminal
+                return 1
+                ;;
+        esac
+
+        printf '\033[%dA' "$count" >&3
+        draw_menu
+    done
+}
+
+terminal_state=$(stty -g <&3 2>/dev/null)
+
+if [ -n "$terminal_state" ] && [ -n "$TERM" ] && [ "$TERM" != dumb ] &&
+    menu_fits; then
+    ask_with_menu
+else
+    ask_for_number
+fi
+exit $?
