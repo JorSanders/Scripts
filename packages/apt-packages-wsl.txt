@@ -2,6 +2,7 @@ exiftool
 ffmpeg
 gh
 imagemagick
+keychain
 parallel
 wslu
 yq

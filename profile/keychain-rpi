@@ -4,10 +4,12 @@ if ! hostname | grep -iq 'raspberry'; then
     return
 fi
 
-if ls ~/.keychain/*-sh >/dev/null 2>&1; then
-    keychain --agents ssh >/dev/null 2>&1
-    # shellcheck source=/dev/null
-    . ~/.keychain/*-sh
+if command -v keychain >/dev/null 2>&1; then
+    keychain --agents ssh --quiet
+    if ls ~/.keychain/*-sh >/dev/null 2>&1; then
+        # shellcheck source=/dev/null
+        . ~/.keychain/*-sh
+    fi
 fi
 
 if ! pgrep gpg-agent >/dev/null 2>&1; then
